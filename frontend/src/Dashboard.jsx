@@ -76,7 +76,7 @@ function Dashboard({ token }) {
         {games.map(game => (
           <Col key={game.id} md={4} className="mb-4">
             <Card style={{ position: 'relative' }}>
-              <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }} />
+            <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} onClick={() => navigate(`/game/${game.id}`)} style={{ height: '180px', objectFit: 'cover', objectPosition: 'center', cursor: 'pointer' }} />
               <Button
                 variant="danger"
                 size="sm"
