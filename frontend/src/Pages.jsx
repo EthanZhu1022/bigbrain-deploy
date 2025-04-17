@@ -11,6 +11,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Container, Button, Alert, Navbar, Nav } from 'react-bootstrap';
+import EditGame from './EditGame';
+import EditQuestion from './EditQuestion';
 
 function Pages() {
   const [token,setToken] = useState(null);
@@ -84,7 +86,9 @@ function Pages() {
         <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
         <Route path="/register" element={<Register token={token} successJob={successJob} showToast={showToast} />} />
         <Route path="/login" element={<Login token={token} successJob={successJob} showToast={showToast} />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard token={token} />} />
+        <Route path="/game/:gameId" element={<EditGame token={token} showToast={showToast} />} />
+        <Route path="/game/:gameId/question/:questionId" element={<EditQuestion token={token} showToast={showToast} />} />
       </Routes>
     </Container>
   )

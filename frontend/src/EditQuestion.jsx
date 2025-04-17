@@ -3,7 +3,7 @@ import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function EditQuestion({ token }) {
+function EditQuestion({ token, showToast }) {
   const { gameId, questionId } = useParams();
   const navigate = useNavigate();
 
@@ -49,6 +49,11 @@ function EditQuestion({ token }) {
   }, [gameId, questionId, token]);
 
   const updateGame = (updatedQuestion) => {
+    if (!updatedQuestion.question.trim()) {
+      showToast && showToast('Question text cannot be empty', 'danger');
+      return;
+    }
+  
     axios.get('http://localhost:5005/admin/games', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
@@ -69,7 +74,7 @@ function EditQuestion({ token }) {
         headers: { Authorization: `Bearer ${token}` }
       });
     }).then(() => {
-      alert('Question saved successfully!');
+      showToast && showToast('Question saved successfully!', 'success');
       navigate(`/game/${gameId}`);
     }).catch(err => {
       console.error('Failed to update game:', err);
