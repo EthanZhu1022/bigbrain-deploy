@@ -53,6 +53,21 @@ function Dashboard({ token }) {
     }
   };
 
+  const handleDeleteGame = (e, gameId, gameName) => {
+    e.stopPropagation();
+    const confirmDelete = window.confirm(`Are you sure you want to delete "${gameName}"?`);
+    if (confirmDelete) {
+      const updatedGames = games.filter(g => g.id !== gameId);
+      axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(() => {
+        setGames(updatedGames);
+      }).catch(err => {
+        console.error('Failed to delete game:', err);
+      });
+    }
+  };  
+
   return (
     <Container className="mt-4">
       <h2>Dashboard</h2>
@@ -60,9 +75,10 @@ function Dashboard({ token }) {
       <Row className="mt-3">
         {games.map(game => (
           <Col key={game.id} md={4} className="mb-4">
-            <Card onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
-              <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} />
-              <Card.Body>
+            <Card style={{ position: 'relative' }}>
+              <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }} />
+              <Button variant="danger" size="sm" style = {{position: 'absolute', top: '8px', right: '8px',zIndex: 1 }} onClick={(e) => handleDeleteGame(e, game.id, game.name)} >Del</Button>
+              <Card.Body onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
                 <Card.Title>{game.name}</Card.Title>
                 <Card.Text>
                   Questions: {game.questions.length}<br />
@@ -79,12 +95,7 @@ function Dashboard({ token }) {
           <Modal.Title>Create New Game</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Control
-            type="text"
-            placeholder="Enter game name"
-            value={gameName}
-            onChange={e => setGameName(e.target.value)}
-          />
+          <Form.Control type="text" placeholder="Enter game name" value={gameName} onChange={e => setGameName(e.target.value)} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
