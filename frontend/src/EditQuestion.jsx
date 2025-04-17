@@ -1,0 +1,172 @@
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+function EditQuestion({ token }) {
+  const { gameId, questionId } = useParams();
+  const navigate = useNavigate();
+
+  const [questionData, setQuestionData] = useState({
+    question: '',
+    time: 30,
+    points: 10,
+    type: 'single',
+    media: '',
+    answers: [
+      { text: '', correct: false },
+      { text: '', correct: false }
+    ]
+  });
+
+  useEffect(() => {
+    axios.get('http://localhost:5005/admin/games', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      const game = res.data.games.find(g => g.id === Number(gameId));
+      if (!game) throw new Error('Game not found');
+
+      if (questionId === 'new') {
+        setQuestionData({
+          question: '',
+          time: 30,
+          points: 10,
+          type: 'single',
+          media: '',
+          answers: [
+            { text: '', correct: false },
+            { text: '', correct: false }
+          ]
+        });
+      } else {
+        const question = game.questions[Number(questionId)];
+        if (!question) throw new Error('Question not found');
+        setQuestionData(question);
+      }
+    }).catch(err => {
+      console.error('Failed to load question:', err);
+    });
+  }, [gameId, questionId, token]);
+
+  const updateGame = (updatedQuestion) => {
+    axios.get('http://localhost:5005/admin/games', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      const games = res.data.games.map(game => {
+        if (game.id === Number(gameId)) {
+          const newQuestions = [...game.questions];
+          if (questionId === 'new') {
+            newQuestions.push(updatedQuestion);
+          } else {
+            newQuestions[Number(questionId)] = updatedQuestion;
+          }
+          return { ...game, questions: newQuestions };
+        }
+        return game;
+      });
+
+      return axios.put('http://localhost:5005/admin/games', { games }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    }).then(() => {
+      alert('Question saved successfully!');
+      navigate(`/game/${gameId}`);
+    }).catch(err => {
+      console.error('Failed to update game:', err);
+    });
+  };
+
+  const handleAnswerChange = (index, key, value) => {
+    const newAnswers = [...questionData.answers];
+    newAnswers[index][key] = key === 'correct' ? value : value;
+    setQuestionData({ ...questionData, answers: newAnswers });
+  };
+
+  const addAnswer = () => {
+    if (questionData.answers.length < 6) {
+      setQuestionData({
+        ...questionData,
+        answers: [...questionData.answers, { text: '', correct: false }]
+      });
+    }
+  };
+
+  const removeAnswer = (index) => {
+    if (questionData.answers.length > 2) {
+      const newAnswers = [...questionData.answers];
+      newAnswers.splice(index, 1);
+      setQuestionData({ ...questionData, answers: newAnswers });
+    }
+  };
+
+  return (
+    <Container className="mt-4">
+      <h2>{questionId === 'new' ? 'Create New Question' : `Edit Question #${Number(questionId) + 1}`}</h2>
+      <Form>
+        <Form.Group className="mb-3">
+          <Form.Label>Question Text</Form.Label>
+          <Form.Control
+            type="text"
+            value={questionData.question}
+            onChange={e => setQuestionData({ ...questionData, question: e.target.value })}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Type</Form.Label>
+          <Form.Select
+            value={questionData.type}
+            onChange={e => setQuestionData({ ...questionData, type: e.target.value })}
+          >
+            <option value="single">Single Choice</option>
+            <option value="multiple">Multiple Choice</option>
+            <option value="judgement">Judgement</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Row className="mb-3">
+          <Col>
+            <Form.Label>Time (seconds)</Form.Label>
+            <Form.Control type="number" value={questionData.time} onChange={e => setQuestionData({ ...questionData, time: Number(e.target.value) })} />
+          </Col>
+          <Col>
+            <Form.Label>Points</Form.Label>
+            <Form.Control type="number" value={questionData.points} onChange={e => setQuestionData({ ...questionData, points: Number(e.target.value) })} />
+          </Col>
+        </Row>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Media URL (YouTube or Image)</Form.Label>
+          <Form.Control type="text" value={questionData.media} onChange={e => setQuestionData({ ...questionData, media: e.target.value })} />
+        </Form.Group>
+
+        <h5>Answers</h5>
+        {questionData.answers.map((answer, index) => (
+          <Row key={index} className="mb-2">
+            <Col xs={8}>
+              <Form.Control type="text" placeholder={`Answer ${index + 1}`} value={answer.text} onChange={e => handleAnswerChange(index, 'text', e.target.value)} />
+            </Col>
+            <Col xs={2}>
+              <Form.Check type="checkbox" label="Correct" checked={answer.correct} onChange={e => handleAnswerChange(index, 'correct', e.target.checked)} />
+            </Col>
+            <Col xs={2}>
+              <Button variant="danger"onClick={() => removeAnswer(index)}disabled={questionData.answers.length <= 2} >Delete</Button>
+            </Col>
+          </Row>
+        ))}
+
+        <Button className="mb-3" onClick={addAnswer} disabled={questionData.answers.length >= 6}>Add Answer</Button>
+        <br />
+        <Button variant="primary" onClick={() => updateGame(questionData)}>
+          {questionId === 'new' ? 'Create Question' : 'Save Changes'}
+        </Button>
+        <br />
+        <div className="mt-3">
+          <Button variant="secondary" onClick={() => navigate(`/game/${gameId}`)}>Back to Edit Game</Button>
+        </div>
+      </Form>
+    </Container>
+  );
+}
+
+export default EditQuestion;
