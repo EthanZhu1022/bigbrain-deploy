@@ -64,6 +64,7 @@ function EditGame({ token, showToast}) {
           <Form.Control value={thumbnail} onChange={e => setThumbnail(e.target.value)} />
         </Form.Group>
         <Button onClick={saveMetadata}>Save Game Info</Button>&nbsp;
+        <Button variant="secondary" onClick={() => navigate('/dashboard')}>Back</Button>
       </Form>
 
       <h4>Questions</h4>
