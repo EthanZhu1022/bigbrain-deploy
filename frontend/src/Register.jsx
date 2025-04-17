@@ -49,15 +49,20 @@ function Register({ successJob, token, showToast }) {
     }
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    register();
+  };
+
   return (
     <Container className="d-flex justify-content-center align-items-center login-page" style={{ minHeight: '80vh' }}>
       <Card style={{ width: '100%', maxWidth: '400px' }}>
         <Card.Body>
           <h2 className="text-center mb-4">Register</h2>
-          <Form>
-            <Form.Group className="mb-3">
+          <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
-              <Form.Control type="name" value={name} onChange={e => setName(e.target.value)} />
+              <Form.Control type="text" value={name} onChange={e => setName(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
@@ -67,16 +72,18 @@ function Register({ successJob, token, showToast }) {
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} />
             </Form.Group>
-            <Form.Group className="mb-4">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control type="password" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
-            </Form.Group>
-            <Button variant="success" onClick={register} className="w-100">Register</Button>
+            <Button variant="success" type="submit" className="w-100">Register</Button>
           </Form>
+          <div className="text-center text-muted" style={{ fontSize: '0.9rem' }}>
+            Already have an account?&nbsp;
+            <Button variant="link" className="p-0 ms-1" onClick={() => navigate('/login')}>
+              Login!
+            </Button>
+          </div>
         </Card.Body>
       </Card>
     </Container>
-  )
+  );
 }
 
 export default Register;
