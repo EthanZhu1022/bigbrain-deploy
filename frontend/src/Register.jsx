@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button, Card, Container } from 'react-bootstrap';
 
 function Register({ successJob, token, showToast }) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -14,8 +15,16 @@ function Register({ successJob, token, showToast }) {
   }
 
   const register = async () => {
+    if (name === '') {
+      showToast('Please enter name', 'danger');
+      return;
+    }
     if (email === '') {
       showToast('Please enter email', 'danger');
+      return;
+    }
+    if (!email.match(/^\S+@\S+\.\S+$/)) {
+      showToast('Wrong email format', 'danger');
       return;
     }
     if (password === '') {
@@ -30,6 +39,7 @@ function Register({ successJob, token, showToast }) {
       const response = await axios.post('http://localhost:5005/admin/auth/register', {
         email: email,
         password: password,
+        name: name,
       });
       const token = response.data.token;
       showToast('Registration successful', 'success');
@@ -45,6 +55,10 @@ function Register({ successJob, token, showToast }) {
         <Card.Body>
           <h2 className="text-center mb-4">Register</h2>
           <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="name" value={name} onChange={e => setName(e.target.value)} />
+            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} />

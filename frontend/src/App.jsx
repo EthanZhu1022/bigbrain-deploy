@@ -1,7 +1,7 @@
 import {
   BrowserRouter as Router,
 } from "react-router-dom";
-import Pages from './pages';
+import Pages from './Pages.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
