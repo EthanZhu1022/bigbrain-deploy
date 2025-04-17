@@ -68,6 +68,10 @@ function Register({ successJob, token, showToast }) {
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} />
             </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control type="password" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
+            </Form.Group>
             <Button variant="success" type="submit" className="w-100">Register</Button>
           </Form>
           <div className="text-center text-muted" style={{ fontSize: '0.9rem' }}>
