@@ -17,10 +17,6 @@ function Login({ successJob, token, showToast }) {
       showToast('Please enter email', 'danger');
       return;
     }
-    if (!email.match(/^\S+@\S+\.\S+$/)) {
-      showToast('Wrong email format', 'danger');
-      return;
-    }
     if (password === '') {
       showToast('Please enter password', 'danger');
       return;
