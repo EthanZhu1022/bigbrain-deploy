@@ -17,7 +17,7 @@ function EditGame({ token, showToast}) {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       setGames(res.data.games);
-      const target = res.data.games.find(g => g.id === Number(gameId));
+      const target = res.data.games.find(g => g.id.toString() === gameId);
       if (target) {
         setGame(target);
         setName(target.name);
@@ -27,7 +27,7 @@ function EditGame({ token, showToast}) {
   }, [gameId, token]);
 
   const updateGames = (newGameData) => {
-    const updatedGames = games.map(g => g.id === Number(gameId) ? newGameData : g);
+    const updatedGames = games.map(g => String(g.id) === gameId ? newGameData : g);
     axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(() => {

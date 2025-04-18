@@ -32,7 +32,7 @@ function Dashboard({ token }) {
 
   const createGame = async () => {
     const newGame = {
-      id: Date.now(),
+      id: String(Date.now()),
       name: gameName,
       owner: getEmailFromToken(token),
       thumbnail: '',
@@ -77,23 +77,7 @@ function Dashboard({ token }) {
           <Col key={game.id} md={4} className="mb-4">
             <Card style={{ position: 'relative' }}>
             <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} onClick={() => navigate(`/game/${game.id}`)} style={{ height: '180px', objectFit: 'cover', objectPosition: 'center', cursor: 'pointer' }} />
-              <Button
-                variant="danger"
-                size="sm"
-                style={{
-                  position: 'absolute',
-                  top: '8px',
-                  right: '8px',
-                  zIndex: 1
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setGameToDelete(game);
-                  setShowDeleteModal(true);
-                }}
-              >
-                Del
-              </Button>
+              <Button variant="danger" size="sm" style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }} onClick={(e) => { e.stopPropagation(); setGameToDelete(game); setShowDeleteModal(true); }} >Del</Button>
               <Card.Body onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
                 <Card.Title>{game.name}</Card.Title>
                 <Card.Text>
