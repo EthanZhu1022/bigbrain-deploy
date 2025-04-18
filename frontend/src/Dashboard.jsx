@@ -24,7 +24,8 @@ function Dashboard({ token }) {
     axios.get('http://localhost:5005/admin/games', {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => {
-      setGames(res.data.games);
+      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setGames(sortedGames);
     }).catch(err => {
       console.error('Failed to load games:', err);
     });
@@ -49,7 +50,8 @@ function Dashboard({ token }) {
       const res = await axios.get('http://localhost:5005/admin/games', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      setGames(res.data.games);
+      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setGames(sortedGames);
       setShowModal(false);
       setGameName('');
     } catch (err) {
