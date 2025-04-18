@@ -46,8 +46,10 @@ function Dashboard({ token }) {
       await axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      setGames(updatedGames);
+      const res = await axios.get('http://localhost:5005/admin/games', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setGames(res.data.games);
       setShowModal(false);
       setGameName('');
     } catch (err) {
