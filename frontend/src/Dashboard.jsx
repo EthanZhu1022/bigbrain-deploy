@@ -12,6 +12,16 @@ function getEmailFromToken(token) {
   }
 }
 
+/**
+ * Dashboard Component
+ * 
+ * Displays a list of games and provides functionality to:
+ * - Create new games
+ * - Delete games
+ * - Start game sessions
+ * - Stop game sessions
+ * - View game results
+ */
 function Dashboard({ token }) {
   const [games, setGames] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -20,19 +30,33 @@ function Dashboard({ token }) {
   const [gameToDelete, setGameToDelete] = useState(null);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [activeSession, setActiveSession] = useState(null);
+  const [showResultsModal, setShowResultsModal] = useState(false);
+  const [gameToStop, setGameToStop] = useState(null);
   const navigate = useNavigate();
 
+  // Fetch games on component mount and when token changes
   useEffect(() => {
-    axios.get('http://localhost:5005/admin/games', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    }).then(res => {
-      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setGames(sortedGames);
-    }).catch(err => {
-      console.error('Failed to load games:', err);
-    });
+    fetchGames();
   }, [token]);
 
+  /**
+   * Fetches the list of games from the server
+   */
+  const fetchGames = async () => {
+    try {
+      const res = await axios.get('http://localhost:5005/admin/games', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setGames(sortedGames);
+    } catch (err) {
+      console.error('Failed to load games:', err);
+    }
+  };
+
+  /**
+   * Creates a new game
+   */
   const createGame = async () => {
     const newGame = {
       id: String(Date.now()),
@@ -49,11 +73,7 @@ function Dashboard({ token }) {
       await axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const res = await axios.get('http://localhost:5005/admin/games', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setGames(sortedGames);
+      await fetchGames();
       setShowModal(false);
       setGameName('');
     } catch (err) {
@@ -61,6 +81,9 @@ function Dashboard({ token }) {
     }
   };
 
+  /**
+   * Deletes a game
+   */
   const confirmDeleteGame = () => {
     const updatedGames = games.filter(g => g.id !== gameToDelete.id);
     axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
@@ -74,6 +97,10 @@ function Dashboard({ token }) {
     });
   };
 
+  /**
+   * Starts a game session
+   * @param {string} gameId - The ID of the game to start
+   */
   const startGame = async (gameId) => {
     try {
       const response = await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
@@ -84,23 +111,50 @@ function Dashboard({ token }) {
       const sessionId = response.data.sessionId;
       setActiveSession({ gameId, sessionId });
       setShowSessionModal(true);
-      
-      // Update games list to reflect active session
-      const updatedGames = games.map(game => {
-        if (game.id === gameId) {
-          return { ...game, active: sessionId };
-        }
-        return game;
-      });
-      setGames(updatedGames);
+      await fetchGames();
     } catch (err) {
       console.error('Failed to start game:', err);
     }
   };
 
+  /**
+   * Stops a game session
+   * @param {string} gameId - The ID of the game to stop
+   */
+  const stopGame = async (gameId) => {
+    try {
+      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
+        mutationType: 'END'
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setGameToStop(gameId);
+      setShowResultsModal(true);
+      await fetchGames();
+    } catch (err) {
+      console.error('Failed to stop game:', err);
+    }
+  };
+
+  /**
+   * Copies the session link to clipboard
+   */
   const copySessionLink = () => {
+    if (!activeSession?.sessionId) {
+      console.error('No active session ID available');
+      return;
+    }
     const url = `${window.location.origin}/play/${activeSession.sessionId}`;
     navigator.clipboard.writeText(url);
+  };
+
+  /**
+   * Navigates to the results screen for a session
+   * @param {string} sessionId - The ID of the session to view results for
+   */
+  const viewResults = (sessionId) => {
+    setShowResultsModal(false);
+    navigate(`/session/${sessionId}`);
   };
 
   return (
@@ -119,24 +173,38 @@ function Dashboard({ token }) {
                   Questions: {game.questions.length}<br />
                   Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
                 </Card.Text>
-                <Button 
-                  variant={game.active ? "success" : "primary"} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!game.active) {
-                      startGame(game.id);
-                    }
-                  }}
-                  disabled={game.active}
-                >
-                  {game.active ? "Game Active" : "Start Game"}
-                </Button>
+                <div className="d-flex gap-2">
+                  <Button 
+                    variant={game.active ? "success" : "primary"} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!game.active) {
+                        startGame(game.id);
+                      }
+                    }}
+                    disabled={game.active}
+                  >
+                    {game.active ? "Game Active" : "Start Game"}
+                  </Button>
+                  {game.active && (
+                    <Button 
+                      variant="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        stopGame(game.id);
+                      }}
+                    >
+                      Stop Game
+                    </Button>
+                  )}
+                </div>
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
 
+      {/* Create Game Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Create New Game</Modal.Title>
@@ -149,6 +217,8 @@ function Dashboard({ token }) {
           <Button variant="primary" onClick={createGame}>Create</Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Delete Game Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
@@ -162,23 +232,25 @@ function Dashboard({ token }) {
         </Modal.Footer>
       </Modal>
 
+      {/* Session Started Modal */}
       <Modal show={showSessionModal} onHide={() => setShowSessionModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Game Session Started</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Session ID: <strong>{activeSession?.sessionId}</strong></p>
+          <p>Session ID: <strong>{activeSession?.sessionId || 'Loading...'}</strong></p>
           <p>Share this link with players to join the game:</p>
           <div className="d-flex align-items-center">
             <Form.Control 
               type="text" 
-              value={`${window.location.origin}/play/${activeSession?.sessionId}`} 
+              value={activeSession?.sessionId ? `${window.location.origin}/play/${activeSession.sessionId}` : 'Loading...'} 
               readOnly 
             />
             <Button 
               variant="primary" 
               className="ms-2" 
               onClick={copySessionLink}
+              disabled={!activeSession?.sessionId}
             >
               Copy Link
             </Button>
@@ -186,6 +258,20 @@ function Dashboard({ token }) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowSessionModal(false)}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* View Results Modal */}
+      <Modal show={showResultsModal} onHide={() => setShowResultsModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Game Session Stopped</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Would you like to view the results?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowResultsModal(false)}>No</Button>
+          <Button variant="primary" onClick={() => viewResults(gameToStop)}>Yes</Button>
         </Modal.Footer>
       </Modal>
     </Container>
