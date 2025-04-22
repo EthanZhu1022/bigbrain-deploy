@@ -39,6 +39,16 @@ function Dashboard({ token }) {
     fetchGames();
   }, [token]);
 
+  const sortGames = (gamesList) => {
+    return [...gamesList]
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 先按时间
+      .sort((a, b) => {
+        const aActive = a.active !== null;
+        const bActive = b.active !== null;
+        return bActive - aActive; // true - false → 正在进行的排前面
+      });
+  };
+
   /**
    * Fetches the list of games from the server
    */
@@ -47,12 +57,12 @@ function Dashboard({ token }) {
       const res = await axios.get('http://localhost:5005/admin/games', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const sortedGames = res.data.games.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setGames(sortedGames);
+      const sorted = sortGames(res.data.games || []);
+      setGames(sorted);
     } catch (err) {
       console.error('Failed to load games:', err);
     }
-  };
+  };  
 
   /**
    * Creates a new game
@@ -109,15 +119,21 @@ function Dashboard({ token }) {
         headers: { 'Authorization': `Bearer ${token}` }
       });
   
-      const res = await axios.get('http://localhost:5005/admin/games', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      let sessionId = null;
+      let updatedGames = [];
   
-      const updatedGames = res.data.games;
-      setGames(updatedGames);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const res = await axios.get('http://localhost:5005/admin/games', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
   
-      const game = updatedGames.find(g => g.id === gameId);
-      const sessionId = game?.active;
+        updatedGames = res.data.games;
+        const game = updatedGames.find(g => g.id === gameId);
+        sessionId = game?.active;
+  
+        if (sessionId) break;
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
   
       if (!sessionId) {
         console.error('No session ID found in game data');
@@ -137,12 +153,13 @@ function Dashboard({ token }) {
         headers: { Authorization: `Bearer ${token}` }
       });
   
+      setGames(sortGames(updatedGames));
       setActiveSession({ gameId, sessionId });
       setShowSessionModal(true);
     } catch (err) {
       console.error('Failed to start game:', err);
     }
-  };
+  };  
 
   /**
    * Stops a game session
