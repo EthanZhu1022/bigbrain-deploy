@@ -103,15 +103,42 @@ function Dashboard({ token }) {
    */
   const startGame = async (gameId) => {
     try {
-      const response = await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
+      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
         mutationType: 'START'
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const sessionId = response.data.sessionId;
+  
+      const res = await axios.get('http://localhost:5005/admin/games', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+  
+      const updatedGames = res.data.games;
+      setGames(updatedGames);
+  
+      const game = updatedGames.find(g => g.id === gameId);
+      const sessionId = game?.active;
+  
+      if (!sessionId) {
+        console.error('No session ID found in game data');
+        return;
+      }
+
+      const finalGames = updatedGames.map(g => {
+        if (g.id === gameId) {
+          return { ...g, active: sessionId };
+        }
+        return g;
+      });
+  
+      await axios.put('http://localhost:5005/admin/games', {
+        games: finalGames
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
       setActiveSession({ gameId, sessionId });
       setShowSessionModal(true);
-      await fetchGames();
     } catch (err) {
       console.error('Failed to start game:', err);
     }
