@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,
@@ -25,18 +26,31 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+/**
+ * SessionResults Component
+ * 
+ * Displays and manages the results of a game session, including:
+ * - Top 5 players and their scores
+ * - Question success rate chart
+ * - Average response time chart
+ * - Ability to advance or stop the session
+ */
 function SessionResults({ token }) {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  
   // State management
   const [sessionStatus, setSessionStatus] = useState(null);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   // Fetch session status and results
   useEffect(() => {
     fetchSessionData();
   }, [sessionId]);
+
   /**
    * Fetches session status and results from the server
    */
@@ -62,6 +76,7 @@ function SessionResults({ token }) {
       setLoading(false);
     }
   };
+
   /**
    * Advances the game to the next question
    */
@@ -77,6 +92,7 @@ function SessionResults({ token }) {
       setError(err.response?.data?.error || 'Failed to advance game');
     }
   };
+
   /**
    * Stops the game session
    */
@@ -92,6 +108,7 @@ function SessionResults({ token }) {
       setError(err.response?.data?.error || 'Failed to stop game');
     }
   };
+
   /**
    * Prepares data for the question success rate chart
    */
@@ -110,6 +127,7 @@ function SessionResults({ token }) {
       });
       return acc;
     }, {});
+
     return {
       labels: Object.keys(questionData).map(i => `Question ${parseInt(i) + 1}`),
       datasets: [{
@@ -121,6 +139,57 @@ function SessionResults({ token }) {
       }]
     };
   };
+
+  /**
+   * Prepares data for the average response time chart
+   */
+  const getResponseTimeData = () => {
+    if (!results) return null;
+
+    const questionData = results.reduce((acc, player) => {
+      player.answers.forEach((answer, index) => {
+        if (!acc[index]) {
+          acc[index] = { totalTime: 0, count: 0 };
+        }
+        const startTime = new Date(answer.questionStartedAt);
+        const endTime = new Date(answer.answeredAt);
+        acc[index].totalTime += (endTime - startTime) / 1000; // Convert to seconds
+        acc[index].count++;
+      });
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(questionData).map(i => `Question ${parseInt(i) + 1}`),
+      datasets: [{
+        label: 'Average Response Time (seconds)',
+        data: Object.values(questionData).map(d => d.totalTime / d.count),
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderColor: 'rgba(153, 102, 255, 1)',
+        borderWidth: 1
+      }]
+    };
+  };
+
+  if (loading) return <Container className="mt-4">Loading...</Container>;
+  if (error) return <Container className="mt-4">Error: {error}</Container>;
+
+  return (
+    <Container className="mt-4">
+      <h2>Session Results</h2>
+      
+      {/* Game Controls */}
+      {sessionStatus.active && (
+        <div className="mb-4">
+          <Button variant="primary" onClick={advanceGame} className="me-2">
+            Advance to Next Question
+          </Button>
+          <Button variant="danger" onClick={stopGame}>
+            Stop Game
+          </Button>
+        </div>
+      )}
+
       {/* Top Players Table */}
       {results && (
         <Card className="mb-4">
@@ -150,6 +219,7 @@ function SessionResults({ token }) {
           </Card.Body>
         </Card>
       )}
+
       {/* Charts */}
       {results && (
         <Row>
@@ -174,4 +244,5 @@ function SessionResults({ token }) {
     </Container>
   );
 }
-export default SessionResults;
+
+export default SessionResults; 
