@@ -9,12 +9,15 @@ import {
   Link,
   useNavigate,
   Navigate,
+
 } from "react-router-dom";
 import { Container, Button, Alert, Navbar, Nav } from 'react-bootstrap';
 import EditGame from './EditGame';
 import EditQuestion from './EditQuestion';
+import PlayGame from './PlayGame';
 
 function Pages() {
+
   const [token,setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -89,6 +92,7 @@ function Pages() {
         <Route path="/dashboard" element={<Dashboard token={token} />} />
         <Route path="/game/:gameId" element={<EditGame token={token} showToast={showToast} />} />
         <Route path="/game/:gameId/question/:questionId" element={<EditQuestion token={token} showToast={showToast} />} />
+        <Route path="/play/:sessionId" element={<PlayGame />} />
       </Routes>
     </Container>
   )
