@@ -26,6 +26,8 @@ function Dashboard({ token }) {
   const [games, setGames] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [gameName, setGameName] = useState('');
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinSessionId, setJoinSessionId] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [gameToDelete, setGameToDelete] = useState(null);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -89,6 +91,13 @@ function Dashboard({ token }) {
     } catch (err) {
       console.error('Failed to create game:', err);
     }
+  };
+
+  const handleJoinGame = () => {
+    if (!joinSessionId.trim()) return;
+    navigate(`/play/${joinSessionId}`);
+    setShowJoinModal(false);
+    setJoinSessionId('');
   };
 
   /**
@@ -205,6 +214,8 @@ function Dashboard({ token }) {
     <Container className="mt-4">
       <h2>Dashboard</h2>
       <Button onClick={() => setShowModal(true)}>Create New Game</Button>
+      &nbsp;
+      <Button variant="secondary" onClick={() => setShowJoinModal(true)}>Join Game</Button>
       <Row className="mt-3">
         {games.map(game => (
           <Col key={game.id} md={4} className="mb-4">
@@ -259,6 +270,25 @@ function Dashboard({ token }) {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
           <Button variant="primary" onClick={createGame}>Create</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Join Game Modal */}
+      <Modal show={showJoinModal} onHide={() => setShowJoinModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Join Game</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="text"
+            placeholder="Enter session ID"
+            value={joinSessionId}
+            onChange={e => setJoinSessionId(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowJoinModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleJoinGame}>Join</Button>
         </Modal.Footer>
       </Modal>
 
