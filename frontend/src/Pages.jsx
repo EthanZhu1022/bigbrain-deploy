@@ -97,7 +97,7 @@ function Pages() {
         <Route path="/play/:sessionId" element={<PlayGame />} />
         <Route path="/play/:sessionId/game" element={<GameScreen />} />
         <Route path="/session/:sessionId" element={<SessionResults token={token} />} />
-        <Route path="/gamecontrol/:gameId" element={<GameControl token={token} showToast={showToast} />} />
+        <Route path="/gamecontrol/:gameId/:sessionId" element={<GameControl token={token} showToast={showToast} />} />
       </Routes>
     </Container>
   )

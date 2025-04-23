@@ -264,7 +264,7 @@ function Dashboard({ token }) {
                     if (!game.active) {
                       startGame(game.id);
                     } else {
-                      navigate(`/gamecontrol/${game.active}`);
+                      navigate(`/gamecontrol/${game.id}/${game.active}`);
                     }
                   }}
                 >
@@ -338,7 +338,7 @@ function Dashboard({ token }) {
       </Modal>
 
       {/* Session Started Modal */}
-      <Modal show={showSessionModal} onHide={() => { setShowSessionModal(false); if (activeSession?.sessionId) { navigate(`/gamecontrol/${activeSession.sessionId}`); } }}centered>
+      <Modal show={showSessionModal} onHide={() => { setShowSessionModal(false); }}centered>
         <Modal.Header closeButton>
           <Modal.Title>Game Session Started</Modal.Title>
         </Modal.Header>
@@ -365,7 +365,6 @@ function Dashboard({ token }) {
         <Button variant="secondary" onClick={() => {
             setShowSessionModal(false);
             if (activeSession?.sessionId) {
-              navigate(`/gamecontrol/${activeSession.sessionId}`);
             }
           }}>Close</Button>
         </Modal.Footer>
