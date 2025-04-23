@@ -26,6 +26,8 @@ function Dashboard({ token }) {
   const [games, setGames] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [gameName, setGameName] = useState('');
+  const [uploadedQuestions, setUploadedQuestions] = useState([]);
+  const [thumbnail, setThumbnail] = useState('');
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joinSessionId, setJoinSessionId] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -74,12 +76,12 @@ function Dashboard({ token }) {
       id: String(Date.now()),
       name: gameName,
       owner: getEmailFromToken(token),
-      thumbnail: '',
-      questions: [],
+      thumbnail: thumbnail,
+      questions: uploadedQuestions,
       active: 0,
       createdAt: new Date().toISOString()
     };
-
+  
     try {
       const updatedGames = [...games, newGame];
       await axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
@@ -88,6 +90,8 @@ function Dashboard({ token }) {
       await fetchGames();
       setShowModal(false);
       setGameName('');
+      setUploadedQuestions([]);
+      setThumbnail('')
     } catch (err) {
       console.error('Failed to create game:', err);
     }
@@ -98,6 +102,30 @@ function Dashboard({ token }) {
     navigate(`/play/${joinSessionId}`);
     setShowJoinModal(false);
     setJoinSessionId('');
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    try {
+      const text = await file.text();
+      const jsonData = JSON.parse(text);
+  
+      if (!jsonData.name || !Array.isArray(jsonData.questions)) {
+        alert("Invalid JSON structure. File must contain 'name' and 'questions'.");
+        return;
+      }
+  
+      setGameName(jsonData.name);
+      setUploadedQuestions(jsonData.questions);
+      if (jsonData.thumbnail) {
+        setThumbnail(jsonData.thumbnail);
+      }
+
+    } catch (err) {
+      alert("Error parsing JSON file.");
+    }
   };
 
   /**
@@ -266,6 +294,8 @@ function Dashboard({ token }) {
         </Modal.Header>
         <Modal.Body>
           <Form.Control type="text" placeholder="Enter game name" value={gameName} onChange={e => setGameName(e.target.value)} />
+          <Form.Label>Or Upload Game File</Form.Label>
+          <Form.Control type="file" accept=".json" onChange={handleFileUpload} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>

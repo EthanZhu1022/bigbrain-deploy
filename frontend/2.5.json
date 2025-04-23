@@ -1,0 +1,73 @@
+{
+    "name": "Sample Game",
+    "questions": [
+      {
+        "question": "What is 2 + 2?",
+        "time": 30,
+        "points": 10,
+        "type": "single",
+        "media": "",
+        "answers": [
+          {
+            "text": "3",
+            "correct": false
+          },
+          {
+            "text": "4",
+            "correct": true
+          },
+          {
+            "text": "5",
+            "correct": false
+          },
+          {
+            "text": "22",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "question": "Select all prime numbers.",
+        "time": 45,
+        "points": 15,
+        "type": "multiple",
+        "media": "",
+        "answers": [
+          {
+            "text": "2",
+            "correct": true
+          },
+          {
+            "text": "4",
+            "correct": false
+          },
+          {
+            "text": "3",
+            "correct": true
+          },
+          {
+            "text": "6",
+            "correct": false
+          }
+        ]
+      },
+      {
+        "question": "Is the earth flat?",
+        "time": 15,
+        "points": 5,
+        "type": "judgement",
+        "media": "",
+        "answers": [
+          {
+            "text": "True",
+            "correct": false
+          },
+          {
+            "text": "False",
+            "correct": true
+          }
+        ]
+      }
+    ],
+    "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/640px-PNG_transparency_demonstration_1.png"
+  }
