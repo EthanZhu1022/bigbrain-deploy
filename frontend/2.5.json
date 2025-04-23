@@ -58,10 +58,14 @@
         "type": "judgement",
         "media": "",
         "answers": [
-          {
-            "text": "",
-            "correct": false
-          }
+            {
+                "text": "True",
+                "correct": false
+            },
+            {
+                "text": "False",
+                "correct": true
+            }
         ]
       }
     ],

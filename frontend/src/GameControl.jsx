@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Button, Card, ListGroup } from 'react-bootstrap';
+import { Container, Button, Card, ListGroup, Alert } from 'react-bootstrap';
 import axios from 'axios';
 
 function GameControl({ token, showToast }) {
@@ -12,10 +12,10 @@ function GameControl({ token, showToast }) {
 
   const fetchSessionInfo = async () => {
     try {
-      const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/status`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setSessionInfo(res.data);
+        const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/status`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      setSessionInfo(res.data.results);
     } catch (err) {
       showToast && showToast('Failed to load session info', 'danger');
     } finally {
