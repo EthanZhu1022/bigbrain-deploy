@@ -2,20 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Card, Alert, Button } from 'react-bootstrap';
 import axios from 'axios';
-/**
- * GameScreen Component
- * 
- * This component handles the actual game play screen where players:
- * - See the current question
- * - View media (image/video) if available
- * - See a countdown timer
- * - Select answers
- * - View results after each question
- */
+
 function GameScreen() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
-  // State management
+
   const [gameState, setGameState] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -24,83 +15,102 @@ function GameScreen() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Get player info from localStorage
   const playerId = localStorage.getItem('playerId');
   const playerName = localStorage.getItem('playerName');
 
-  // Check if player is authenticated
   useEffect(() => {
     if (!playerId || !playerName) {
       navigate(`/play/${sessionId}`);
     }
   }, [playerId, playerName, sessionId, navigate]);
-  // Poll for game state updates
+
   useEffect(() => {
     const pollGameState = async () => {
       try {
-        const response = await axios.get(`http://localhost:5005/play/${sessionId}/status`);
+        const response = await axios.get(`http://localhost:5005/play/${playerId}/status`);
         const { gameState, currentQuestion, timeLeft } = response.data;
         setGameState(gameState);
-        setCurrentQuestion(currentQuestion);
         setTimeLeft(timeLeft);
-        // If game hasn't started, show waiting screen
+
         if (gameState === 'WAITING') {
           setIsLoading(false);
           return;
         }
-        // If game is over, navigate to results
+
         if (gameState === 'FINISHED') {
           navigate(`/play/${sessionId}/results`);
           return;
         }
-        // If question has changed, reset selected answers
+
         if (currentQuestion && (!selectedAnswers.length || selectedAnswers[0].questionId !== currentQuestion.id)) {
           setSelectedAnswers([]);
           setShowResults(false);
         }
 
+        setCurrentQuestion(currentQuestion);
         setIsLoading(false);
+
+        if (timeLeft <= 0) {
+          setShowResults(true);
+        }
       } catch (err) {
         setError('Failed to fetch game state');
         setIsLoading(false);
       }
     };
-    // Initial poll
+
     pollGameState();
-    // Set up polling interval
     const interval = setInterval(pollGameState, 1000);
-    // Cleanup interval on unmount
     return () => clearInterval(interval);
-  }, [sessionId, selectedAnswers, navigate]);
-  // Handle answer selection
+  }, [sessionId, playerId, selectedAnswers, navigate]);
+
   const handleAnswerSelect = async (answerId) => {
     if (showResults || timeLeft <= 0) return;
+
     try {
-      // For single choice questions, replace the selection
-      if (currentQuestion.type === 'SINGLE') {
+      if (currentQuestion.type === 'SINGLE' || currentQuestion.type === 'JUDGEMENT') {
         setSelectedAnswers([{ questionId: currentQuestion.id, answerId }]);
-      } 
-      // For multiple choice questions, toggle the selection
-      else if (currentQuestion.type === 'MULTIPLE') {
+        await axios.put(`http://localhost:5005/play/${playerId}/answer`, {
+          questionId: currentQuestion.id,
+          answerId,
+        });
+      } else if (currentQuestion.type === 'MULTIPLE') {
         setSelectedAnswers(prev => {
           const exists = prev.find(a => a.answerId === answerId);
+          let newAnswers;
           if (exists) {
-            return prev.filter(a => a.answerId !== answerId);
+            newAnswers = prev.filter(a => a.answerId !== answerId);
+          } else {
+            newAnswers = [...prev, { questionId: currentQuestion.id, answerId }];
           }
-          return [...prev, { questionId: currentQuestion.id, answerId }];
+
+          newAnswers.forEach(async ans => {
+            await axios.put(`http://localhost:5005/play/${playerId}/answer`, {
+              questionId: currentQuestion.id,
+              answerId: ans.answerId,
+            });
+          });
+
+          return newAnswers;
         });
       }
-      // Send answer to server
-      await axios.post(`http://localhost:5005/play/${sessionId}/answer`, {
-        playerId,
-        questionId: currentQuestion.id,
-        answerId
-      });
     } catch (err) {
       setError('Failed to submit answer');
     }
   };
-  // Render waiting screen
+
+  if (isLoading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Card className="mx-auto" style={{ maxWidth: '500px' }}>
+          <Card.Body>
+            <Card.Title>Loading...</Card.Title>
+          </Card.Body>
+        </Card>
+      </Container>
+    );
+  }
+
   if (gameState === 'WAITING') {
     return (
       <Container className="mt-5 text-center">
@@ -113,19 +123,7 @@ function GameScreen() {
       </Container>
     );
   }
-  // Render loading state
-  if (isLoading) {
-    return (
-      <Container className="mt-5 text-center">
-        <Card className="mx-auto" style={{ maxWidth: '500px' }}>
-          <Card.Body>
-            <Card.Title>Loading...</Card.Title>
-          </Card.Body>
-        </Card>
-      </Container>
-    );
-  }
-  // Render error state
+
   if (error) {
     return (
       <Container className="mt-5">
@@ -133,39 +131,38 @@ function GameScreen() {
       </Container>
     );
   }
-  // Render game screen
+
   return (
     <Container className="mt-4">
       <Card className="mb-4">
         <Card.Body>
           <Card.Title>Question {currentQuestion?.number}</Card.Title>
           <Card.Text>{currentQuestion?.text}</Card.Text>
-          
-          {/* Display media if available */}
+
           {currentQuestion?.media && (
             <div className="mb-3">
               {currentQuestion.media.type === 'image' ? (
-                <img 
-                  src={currentQuestion.media.url} 
-                  alt="Question media" 
+                <img
+                  src={currentQuestion.media.url}
+                  alt="Question media"
                   className="img-fluid"
                   style={{ maxHeight: '300px' }}
                 />
               ) : (
-                <video 
-                  src={currentQuestion.media.url} 
-                  controls 
+                <video
+                  src={currentQuestion.media.url}
+                  controls
                   className="w-100"
                   style={{ maxHeight: '300px' }}
                 />
               )}
             </div>
           )}
-          {/* Timer */}
+
           <div className="mb-3">
             <h3>Time Left: {timeLeft} seconds</h3>
           </div>
-          {/* Answer options */}
+
           {!showResults && (
             <div className="d-grid gap-2">
               {currentQuestion?.answers.map(answer => (
@@ -180,7 +177,7 @@ function GameScreen() {
               ))}
             </div>
           )}
-          {/* Results display */}
+
           {showResults && currentQuestion?.results && (
             <div className="mt-3">
               <h4>Results</h4>
@@ -197,4 +194,4 @@ function GameScreen() {
   );
 }
 
-export default GameScreen; 
+export default GameScreen;
