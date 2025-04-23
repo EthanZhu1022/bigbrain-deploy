@@ -216,35 +216,50 @@ function Dashboard({ token }) {
       <Button variant="secondary" onClick={() => setShowJoinModal(true)}>Join Game</Button>
       <Row className="mt-3">
         {games.map(game => (
-          <Col key={game.id} md={4} className="mb-4">
-            <Card style={{ position: 'relative' }}>
-              <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} onClick={() => navigate(`/game/${game.id}`)} style={{ height: '180px', objectFit: 'cover', objectPosition: 'center', cursor: 'pointer' }} />
-              <Button variant="danger" size="sm" style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }} onClick={(e) => { e.stopPropagation(); setGameToDelete(game); setShowDeleteModal(true); }} >Del</Button>
-              <Card.Body onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
-                <Card.Title>{game.name}</Card.Title>
-                <Card.Text>
-                  Questions: {game.questions.length}<br />
-                  Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
-                </Card.Text>
-                <div className="d-flex gap-2">
-                <Button 
-                  variant={game.active ? "success" : "primary"} 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!game.active) {
-                      startGame(game.id);
-                    } else {
-                      navigate(`/gamecontrol/${game.id}/${game.active}`);
-                    }
-                  }}
-                >
-                  {game.active ? "Control Game" : "Start Game"}
-                </Button>
-                {game.active && ( <span className="align-self-center ms-2"><strong>SessionId:</strong> {game.active}</span> )}
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
+         <Col key={game.id} md={4} className="mb-4 d-flex">
+         <Card className="w-100 h-100 d-flex flex-column justify-content-between" style={{ position: 'relative' }}>
+           <div onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
+           <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} style={{ height: '180px', width: '100%', objectFit: 'fill', objectPosition: 'center' }} />
+           </div>
+           <Button
+             variant="danger"
+             size="sm"
+             style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }}
+             onClick={(e) => {
+               e.stopPropagation();
+               setGameToDelete(game);
+               setShowDeleteModal(true);
+             }}
+           >
+             Del
+           </Button>
+           <Card.Body style={{ cursor: 'pointer' }} onClick={() => navigate(`/game/${game.id}`)}>
+             <Card.Title className="text-truncate">{game.name}</Card.Title>
+             <Card.Text style={{ fontSize: '0.9rem', lineHeight: '1.2rem' }}>
+               Questions: {game.questions.length}<br />
+               Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
+             </Card.Text>
+             <div className="d-flex flex-wrap gap-2 align-items-center">
+               <Button
+                 variant={game.active ? "success" : "primary"}
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   if (!game.active) {
+                     startGame(game.id);
+                   } else {
+                     navigate(`/gamecontrol/${game.id}/${game.active}`);
+                   }
+                 }}
+               >
+                 {game.active ? "Control Game" : "Start Game"}
+               </Button>
+               {game.active && (
+                 <span style={{ fontSize: '0.8rem' }}><strong>SessionId:</strong> {game.active}</span>
+               )}
+             </div>
+           </Card.Body>
+         </Card>
+       </Col>       
         ))}
       </Row>
 
