@@ -17,6 +17,7 @@ import PlayGame from './PlayGame';
 import GameScreen from './GameScreen';
 import SessionResults from './SessionResults';
 import GameControl from './GameControl';
+import Lobby from './Lobby';
 
 function Pages() {
 
@@ -98,6 +99,7 @@ function Pages() {
         <Route path="/play/:sessionId/game" element={<GameScreen />} />
         <Route path="/session/:sessionId" element={<SessionResults token={token} />} />
         <Route path="/gamecontrol/:gameId/:sessionId" element={<GameControl token={token} showToast={showToast} />} />
+        <Route path="/play/:sessionId/lobby" element={<Lobby />} />
       </Routes>
     </Container>
   )

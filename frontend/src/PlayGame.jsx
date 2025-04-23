@@ -32,7 +32,7 @@ function PlayGame() {
       const statusRes = await axios.get(`http://localhost:5005/play/${playerId}/status`);
       const statusData = statusRes.data;
 
-      navigate(`/play/${sessionId}/game`);
+      navigate(`/play/${sessionId}/lobby`);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to join game');
     } finally {
