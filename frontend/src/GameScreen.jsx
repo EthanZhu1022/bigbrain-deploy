@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Card, Alert, Button } from 'react-bootstrap';
 import axios from 'axios';
+/**
+ * GameScreen Component
+ * 
+ * This component handles the actual game play screen where players:
+ * - See the current question
+ * - View media (image/video) if available
+ * - See a countdown timer
+ * - Select answers
+ * - View results after each question
+ */
 function GameScreen() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
