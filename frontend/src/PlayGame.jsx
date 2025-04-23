@@ -32,16 +32,6 @@ function PlayGame() {
       const statusRes = await axios.get(`http://localhost:5005/play/${playerId}/status`);
       const statusData = statusRes.data;
 
-      if (statusData.position === -1) {
-        setError('The game has not started yet. Please wait for the host.');
-        return;
-      }
-
-      if (statusData.status === 'completed') {
-        setError('The game has already ended.');
-        return;
-      }
-
       navigate(`/play/${sessionId}/game`);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to join game');
