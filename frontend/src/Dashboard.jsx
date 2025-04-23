@@ -91,7 +91,7 @@ function Dashboard({ token }) {
       setShowModal(false);
       setGameName('');
       setUploadedQuestions([]);
-      setThumbnail('')
+      setThumbnail('');
     } catch (err) {
       console.error('Failed to create game:', err);
     }
