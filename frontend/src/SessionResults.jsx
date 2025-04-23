@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table, Card } from 'react-bootstrap';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate  } from 'react-router-dom';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -29,6 +29,7 @@ ChartJS.register(
 function SessionResults({ token }) {
   const { sessionId  } = useParams();
   const [results, setResults] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -220,6 +221,9 @@ function SessionResults({ token }) {
           </ul>
         </Card.Body>
       </Card>
+      <div className="text-center mb-4">
+        <button className="btn btn-outline-primary" onClick={() => navigate('/dashboard')} >Back to Dashboard</button>
+      </div>
     </Container>
   );
 }
