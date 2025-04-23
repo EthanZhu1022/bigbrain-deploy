@@ -53,7 +53,21 @@ function EditQuestion({ token, showToast }) {
       showToast && showToast('Question text cannot be empty', 'danger');
       return;
     }
-  
+
+    const correctCount = updatedQuestion.answers.filter(a => a.correct).length;
+    if (updatedQuestion.type === 'single' && correctCount !== 1) {
+      showToast && showToast('Single choice question must have exactly one correct answer!', 'danger');
+      return;
+    }
+    if (updatedQuestion.type === 'multiple' && correctCount < 2) {
+      showToast && showToast('Multiple choice question must have at least two correct answers!', 'danger');
+      return;
+    }
+    if ((updatedQuestion.type === 'single' || updatedQuestion.type === 'multiple') && updatedQuestion.answers.some(a => !a.text.trim())) {
+      showToast && showToast('Answer text cannot be empty for single or multiple choice questions!', 'danger');
+      return;
+    }
+     
     axios.get('http://localhost:5005/admin/games', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
@@ -83,6 +97,21 @@ function EditQuestion({ token, showToast }) {
 
   const handleAnswerChange = (index, key, value) => {
     const newAnswers = [...questionData.answers];
+
+    if (key === 'correct' && value === true && questionData.type === 'single') {
+      const alreadyCorrect = newAnswers.filter(a => a.correct).length;
+      if (alreadyCorrect >= 1) {
+        showToast && showToast('This is a single question,only have one correct answer!', 'danger');
+        return;
+      }
+    }
+
+    if (questionData.type === 'single' && key === 'correct') {
+      newAnswers.forEach((a, i) => {
+        if (i !== index) a.correct = false;
+      });
+    }
+
     newAnswers[index][key] = key === 'correct' ? value : value;
     setQuestionData({ ...questionData, answers: newAnswers });
   };
@@ -148,19 +177,27 @@ function EditQuestion({ token, showToast }) {
         <h5>Answers</h5>
         {questionData.answers.map((answer, index) => (
           <Row key={index} className="mb-2">
+             {questionData.type !== 'judgement' && (
             <Col xs={8}>
               <Form.Control type="text" placeholder={`Answer ${index + 1}`} value={answer.text} onChange={e => handleAnswerChange(index, 'text', e.target.value)} />
             </Col>
+            )}
+            {(questionData.type !== 'judgement' || index === 0) && (
             <Col xs={2}>
               <Form.Check type="checkbox" label="Correct" checked={answer.correct} onChange={e => handleAnswerChange(index, 'correct', e.target.checked)} />
             </Col>
+            )}
+            {questionData.type !== 'judgement' && (
             <Col xs={2}>
               <Button variant="danger"onClick={() => removeAnswer(index)}disabled={questionData.answers.length <= 2} >Delete</Button>
             </Col>
+            )}
           </Row>
         ))}
 
-        <Button className="mb-3" onClick={addAnswer} disabled={questionData.answers.length >= 6}>Add Answer</Button>
+        {questionData.type !== 'judgement' && (
+          <Button className="mb-3" onClick={addAnswer} disabled={questionData.answers.length >= 6}>Add Answer</Button>
+        )}
         <br />
         <Button variant="primary" onClick={() => updateGame(questionData)}>
           {questionId === 'new' ? 'Create Question' : 'Save Changes'}
