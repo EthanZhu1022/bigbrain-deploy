@@ -31,11 +31,25 @@ function GameControl({ token, showToast }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       showToast && showToast('Advanced to next question', 'success');
-      fetchSessionInfo(); 
+  
+      const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+  
+      const updatedSession = res.data.results;
+      setSessionInfo(updatedSession);
+  
+      const newPosition = updatedSession?.position ?? -1;
+      const total = updatedSession?.questions?.length ?? 0;
+  
+      if (updatedSession?.active === false || newPosition + 1 > total) {
+        showToast && showToast('Game has ended', 'info');
+        navigate(`/session/${sessionId}`);
+      }
     } catch (err) {
       showToast && showToast('Failed to advance question', 'danger');
     }
-  };
+  };  
 
   const handleEndGame = async () => {
     try {
@@ -45,11 +59,11 @@ function GameControl({ token, showToast }) {
         headers: { Authorization: `Bearer ${token}` }
       });
       showToast && showToast('Game ended', 'warning');
-      fetchSessionInfo();
+      navigate(`/session/${sessionId}`);
     } catch (err) {
       showToast && showToast('Failed to end game', 'danger');
     }
-  };
+  };  
 
   const handleBack = () => {
     navigate('/dashboard');

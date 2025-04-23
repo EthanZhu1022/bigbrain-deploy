@@ -34,8 +34,6 @@ function Dashboard({ token }) {
   const [gameToDelete, setGameToDelete] = useState(null);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [activeSession, setActiveSession] = useState(null);
-  const [showResultsModal, setShowResultsModal] = useState(false);
-  const [gameToStop, setGameToStop] = useState(null);
   const navigate = useNavigate();
 
   // Fetch games on component mount and when token changes
@@ -199,25 +197,6 @@ function Dashboard({ token }) {
   };  
 
   /**
-   * Stops a game session
-   * @param {string} gameId - The ID of the game to stop
-   */
-  const stopGame = async (gameId) => {
-    try {
-      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
-        mutationType: 'END'
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      setGameToStop(gameId);
-      setShowResultsModal(true);
-      await fetchGames();
-    } catch (err) {
-      console.error('Failed to stop game:', err);
-    }
-  };
-
-  /**
    * Copies the session link to clipboard
    */
   const copySessionLink = () => {
@@ -227,15 +206,6 @@ function Dashboard({ token }) {
     }
     const url = `${window.location.origin}/play/${activeSession.sessionId}`;
     navigator.clipboard.writeText(url);
-  };
-
-  /**
-   * Navigates to the results screen for a session
-   * @param {string} sessionId - The ID of the session to view results for
-   */
-  const viewResults = (sessionId) => {
-    setShowResultsModal(false);
-    navigate(`/session/${sessionId}`);
   };
 
   return (
@@ -270,17 +240,7 @@ function Dashboard({ token }) {
                 >
                   {game.active ? "Control Game" : "Start Game"}
                 </Button>
-                  {game.active && (
-                    <Button 
-                      variant="danger"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        stopGame(game.id);
-                      }}
-                    >
-                      Stop Game
-                    </Button>
-                  )}
+                {game.active && ( <span className="align-self-center ms-2"><strong>SessionId:</strong> {game.active}</span> )}
                 </div>
               </Card.Body>
             </Card>
@@ -367,20 +327,6 @@ function Dashboard({ token }) {
             if (activeSession?.sessionId) {
             }
           }}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* View Results Modal */}
-      <Modal show={showResultsModal} onHide={() => setShowResultsModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Game Session Stopped</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Would you like to view the results?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowResultsModal(false)}>No</Button>
-          <Button variant="primary" onClick={() => viewResults(gameToStop)}>Yes</Button>
         </Modal.Footer>
       </Modal>
     </Container>
