@@ -45,11 +45,11 @@ function Dashboard({ token }) {
 
   const sortGames = (gamesList) => {
     return [...gamesList]
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // 先按时间
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .sort((a, b) => {
         const aActive = a.active !== null;
         const bActive = b.active !== null;
-        return bActive - aActive; // true - false → 正在进行的排前面
+        return bActive - aActive;
       });
   };
 
@@ -257,18 +257,19 @@ function Dashboard({ token }) {
                   Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
                 </Card.Text>
                 <div className="d-flex gap-2">
-                  <Button 
-                    variant={game.active ? "success" : "primary"} 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!game.active) {
-                        startGame(game.id);
-                      }
-                    }}
-                    disabled={game.active}
-                  >
-                    {game.active ? "Game Active" : "Start Game"}
-                  </Button>
+                <Button 
+                  variant={game.active ? "success" : "primary"} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!game.active) {
+                      startGame(game.id);
+                    } else {
+                      navigate(`/gamecontrol/${game.active}`);
+                    }
+                  }}
+                >
+                  {game.active ? "Control Game" : "Start Game"}
+                </Button>
                   {game.active && (
                     <Button 
                       variant="danger"
@@ -337,7 +338,7 @@ function Dashboard({ token }) {
       </Modal>
 
       {/* Session Started Modal */}
-      <Modal show={showSessionModal} onHide={() => setShowSessionModal(false)} centered>
+      <Modal show={showSessionModal} onHide={() => { setShowSessionModal(false); if (activeSession?.sessionId) { navigate(`/gamecontrol/${activeSession.sessionId}`); } }}centered>
         <Modal.Header closeButton>
           <Modal.Title>Game Session Started</Modal.Title>
         </Modal.Header>
@@ -361,7 +362,12 @@ function Dashboard({ token }) {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowSessionModal(false)}>Close</Button>
+        <Button variant="secondary" onClick={() => {
+            setShowSessionModal(false);
+            if (activeSession?.sessionId) {
+              navigate(`/gamecontrol/${activeSession.sessionId}`);
+            }
+          }}>Close</Button>
         </Modal.Footer>
       </Modal>
 

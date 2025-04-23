@@ -16,6 +16,7 @@ import EditQuestion from './EditQuestion';
 import PlayGame from './PlayGame';
 import GameScreen from './GameScreen';
 import SessionResults from './SessionResults';
+import GameControl from './GameControl';
 
 function Pages() {
 
@@ -96,6 +97,7 @@ function Pages() {
         <Route path="/play/:sessionId" element={<PlayGame />} />
         <Route path="/play/:sessionId/game" element={<GameScreen />} />
         <Route path="/session/:sessionId" element={<SessionResults token={token} />} />
+        <Route path="/gamecontrol/:gameId" element={<GameControl token={token} showToast={showToast} />} />
       </Routes>
     </Container>
   )

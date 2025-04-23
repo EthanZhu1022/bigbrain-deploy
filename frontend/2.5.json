@@ -59,12 +59,8 @@
         "media": "",
         "answers": [
           {
-            "text": "True",
+            "text": "",
             "correct": false
-          },
-          {
-            "text": "False",
-            "correct": true
           }
         ]
       }
