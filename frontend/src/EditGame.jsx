@@ -60,7 +60,7 @@ function EditGame({ token, showToast}) {
           <Form.Control value={name} onChange={e => setName(e.target.value)} />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Thumbnail URL</Form.Label>
+          <Form.Label>Thumbnail</Form.Label>
           <Form.Control value={thumbnail} onChange={e => setThumbnail(e.target.value)} />
         </Form.Group>
         <Button onClick={saveMetadata}>Save Game Info</Button>&nbsp;
