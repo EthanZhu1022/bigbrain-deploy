@@ -14,6 +14,7 @@ import { Container, Button, Alert, Navbar, Nav } from 'react-bootstrap';
 import EditGame from './EditGame';
 import EditQuestion from './EditQuestion';
 import PlayGame from './PlayGame';
+import GameScreen from './GameScreen';
 import SessionResults from './SessionResults';
 
 function Pages() {
@@ -93,6 +94,7 @@ function Pages() {
         <Route path="/game/:gameId" element={<EditGame token={token} showToast={showToast} />} />
         <Route path="/game/:gameId/question/:questionId" element={<EditQuestion token={token} showToast={showToast} />} />
         <Route path="/play/:sessionId" element={<PlayGame />} />
+        <Route path="/play/:sessionId/game" element={<GameScreen />} />
         <Route path="/session/:sessionId" element={<SessionResults token={token} />} />
       </Routes>
     </Container>
