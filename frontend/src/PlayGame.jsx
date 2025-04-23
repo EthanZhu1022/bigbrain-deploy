@@ -19,7 +19,30 @@ function PlayGame() {
   // State management
   const [playerName, setPlayerName] = useState(''); // Stores the player's name input
   const [error, setError] = useState(null); // Stores any error messages
-  const [isLoading, setIsLoading] = useState(false); // Loading state for the join request
+  const [isLoading, setIsLoading] = useState(true); // Loading state for initial session check
+  const [isJoining, setIsJoining] = useState(false); // Loading state for join request
+  const [sessionStatus, setSessionStatus] = useState(null); // Stores session status
+
+  // Check session status on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5005/play/${sessionId}/status`);
+        setSessionStatus(response.data);
+        
+        // If session is finished, show error
+        if (response.data.status === 'FINISHED') {
+          setError('This game session has ended');
+        }
+      } catch (err) {
+        setError('Invalid session ID or session not found');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkSession();
+  }, [sessionId]);
 
   /**
    * Handles the form submission to join a game session
@@ -34,11 +57,16 @@ function PlayGame() {
       return;
     }
 
-    setIsLoading(true);
+    // Check if session is active
+    if (sessionStatus?.status !== 'ACTIVE') {
+      setError('Cannot join this game session');
+      return;
+    }
+
+    setIsJoining(true);
     try {
       // Send request to join the game session
-      const response = await axios.post(`http://localhost:5005/play/join`, {
-        sessionId: parseInt(sessionId),
+      const response = await axios.post(`http://localhost:5005/play/${sessionId}/join`, {
         name: playerName
       });
       
@@ -52,9 +80,43 @@ function PlayGame() {
       // Handle any errors from the join request
       setError(err.response?.data?.error || 'Failed to join game');
     } finally {
-      setIsLoading(false);
+      setIsJoining(false);
     }
   };
+
+  // Render loading state
+  if (isLoading) {
+    return (
+      <Container className="mt-5 text-center">
+        <Card className="mx-auto" style={{ maxWidth: '500px' }}>
+          <Card.Body>
+            <Card.Title>Checking Session...</Card.Title>
+          </Card.Body>
+        </Card>
+      </Container>
+    );
+  }
+
+  // Render error state if session is invalid or finished
+  if (error && !sessionStatus) {
+    return (
+      <Container className="mt-5">
+        <Card className="mx-auto" style={{ maxWidth: '500px' }}>
+          <Card.Body>
+            <Card.Title className="text-center mb-4">Error</Card.Title>
+            <Alert variant="danger">{error}</Alert>
+            <Button 
+              variant="primary" 
+              className="w-100 mt-3"
+              onClick={() => navigate('/')}
+            >
+              Return to Home
+            </Button>
+          </Card.Body>
+        </Card>
+      </Container>
+    );
+  }
 
   return (
     <Container className="mt-5">
@@ -74,7 +136,7 @@ function PlayGame() {
                 placeholder="Enter your name"
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
-                disabled={isLoading}
+                disabled={isJoining}
               />
             </Form.Group>
             
@@ -83,9 +145,9 @@ function PlayGame() {
               variant="primary" 
               type="submit" 
               className="w-100"
-              disabled={isLoading}
+              disabled={isJoining || sessionStatus?.status !== 'ACTIVE'}
             >
-              {isLoading ? 'Joining...' : 'Join Game'}
+              {isJoining ? 'Joining...' : 'Join Game'}
             </Button>
           </Form>
         </Card.Body>
