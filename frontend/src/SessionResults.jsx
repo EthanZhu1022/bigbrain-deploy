@@ -112,7 +112,55 @@ function SessionResults({ token }) {
     };
   };
 
- 
+  const getResponseTimeData = () => {
+    const questionIds = results.flatMap(p =>
+      Array.isArray(p.answers)
+        ? p.answers
+            .map(a => typeof a.questionId === 'number' ? a.questionId : -1)
+        : []
+    ).filter(id => id >= 0);
+  
+    if (questionIds.length === 0) {
+      return {
+        labels: [],
+        datasets: [{
+          label: 'Average Time (s)',
+          data: [],
+        }]
+      };
+    }
+  
+    const questionCount = Math.max(...questionIds) + 1;
+    const totalTime = Array(questionCount).fill(0);
+    const count = Array(questionCount).fill(0);
+  
+    results.forEach(player => {
+      if (!Array.isArray(player.answers)) return;
+      player.answers.forEach(ans => {
+        if (typeof ans.questionId !== 'number') return;
+        if (!ans.answeredAt || !ans.questionStartedAt) return;
+  
+        const time =
+          (new Date(ans.answeredAt) - new Date(ans.questionStartedAt)) / 1000;
+        if (!isNaN(time)) {
+          totalTime[ans.questionId] += time;
+          count[ans.questionId]++;
+        }
+      });
+    });
+  
+    return {
+      labels: totalTime.map((_, i) => `Q${i + 1}`),
+      datasets: [{
+        label: 'Average Time (s)',
+        data: totalTime.map((t, i) =>
+          count[i] > 0 ? (t / count[i]).toFixed(2) : 0),
+        fill: false,
+        borderColor: 'rgba(153, 102, 255, 0.8)',
+        tension: 0.3,
+      }]
+    };
+  };
 
   return (
     <Container className="mt-4">
