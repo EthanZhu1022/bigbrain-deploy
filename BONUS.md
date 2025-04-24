@@ -14,8 +14,6 @@ As part of the optional challenge, I have successfully deployed both the fronten
   - Imported the project to Vercel using:
     - **GitHub** as the provider
     - **Correct directory selection** during setup (frontend folder)
-  - Ensured proper build by configuring:
-    - **Node.js version 16** (to resolve any `npm ERR! code 1` errors)
   - Modified the domain to include my **zID** for identification:
     ```
     https://z5610836-bigbrain-fe-deploy.vercel.app/
