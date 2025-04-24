@@ -7,7 +7,7 @@ As part of the optional challenge, I have successfully deployed both the fronten
 - Followed Vercel deployment instructions:
  Here's my deployed frontend:
 
-![Frontend Screenshot](./assets/frontend.jpeg)
+![Frontend Screenshot](./assets/frontend.jpg)
   - Imported the project to Vercel using:
     - **GitHub** as the provider
     - **Correct directory selection** during setup (frontend folder)
@@ -22,8 +22,8 @@ As part of the optional challenge, I have successfully deployed both the fronten
 - Ensured that the API is accessible from the frontend.
 - Updated API base URLs in the frontend to point to the deployed backend.
 - Verified that the frontend and backend work **seamlessly together** in production.
-![Backend Screenshot](./assets/backend.jpeg)
-![Vercel Dashboard](./assets/vercel-dashboard.jpeg)
+![Backend Screenshot](./assets/backend.jpg)
+![Vercel Dashboard](./assets/vercel-dashboard.jpg)
 ## Outcome
 
 - The deployed frontend is live and functional.
