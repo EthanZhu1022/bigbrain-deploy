@@ -40,10 +40,8 @@ function SessionResults({ token }) {
           }
         });
   
-        console.log("Fetched results:", res.data.results);
         setResults(res.data.results || []);
       } catch (err) {
-        console.error('Failed to fetch results', err);
         setResults([]);
       }
     };

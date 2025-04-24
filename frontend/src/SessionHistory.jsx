@@ -12,32 +12,29 @@ function SessionHistory() {
   useEffect(() => {
     const sessionMap = JSON.parse(localStorage.getItem('sessionMap') || '{}');
     const localSessions = sessionMap[gameId] || [];
-
+  
     const fetchSessionMeta = async () => {
       const fetched = await Promise.all(localSessions.map(async (id) => {
         try {
           const res = await axios.get(`http://localhost:5005/admin/session/${id}/status`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          console,console.log(res.data);
-          console,console.log(res.data.results.active);
-
+  
           const session = res.data.results;
-          
-
           if (!session.active) {
             return {
-                id,
-                createdAt: res.data.startedAt || new Date().toISOString(),
+              id,
+              createdAt: session.isoTimeLastQuestionStarted || new Date().toISOString(),
             };
-            }          
-        } catch {
+          }
+          return null;
+        } catch (err) {
           return null;
         }
       }));
 
       const filteredSorted = fetched
-        .filter(s => s !== null)
+        .filter(s => s !== null && s !== undefined)
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setSessions(filteredSorted);
     };

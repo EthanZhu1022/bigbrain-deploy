@@ -197,7 +197,7 @@ function Dashboard({ token }) {
     if (!sessionMap[gameId].includes(sessionId)) {
       sessionMap[gameId].push(sessionId);
       localStorage.setItem('sessionMap', JSON.stringify(sessionMap));
-}
+    }
 
     } catch (err) {
       console.error('Failed to start game:', err);
@@ -248,26 +248,18 @@ function Dashboard({ token }) {
                Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
              </Card.Text>
              <div className="d-flex flex-wrap gap-2 align-items-center">
-              <Button
-                variant={game.active ? "success" : "primary"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!game.active) {
-                    startGame(game.id);
-                  } else {
-                    navigate(`/gamecontrol/${game.id}/${game.active}`);
-                  }
-                }}
-                >
+             <Button variant={game.active ? "success" : "primary"} onClick={(e) => { e.stopPropagation(); if (!game.active) { startGame(game.id); } else { navigate(`/gamecontrol/${game.id}/${game.active}`); }}} >
                 {game.active ? "Control Game" : "Start Game"}
-              </Button>
-              {game.active && (
-                <span style={{ fontSize: '0.8rem' }}><strong>SessionId:</strong> {game.active}</span>
-              )}
+             </Button>
+              {game.active && ( <span style={{ fontSize: '0.8rem' }}><strong>SessionId:</strong> {game.active}</span> )} 
              </div>
-             <Button variant="outline-secondary" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/history/${game.id}`); }} >View Past Sessions</Button>
+             <div className="mt-2">
+              <Button variant="outline-secondary" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/history/${game.id}`);}} >
+                View Past Sessions
+              </Button>
+             </div>
             </Card.Body>
-           </Card>
+          </Card>
         </Col>       
         ))}
       </Row>
