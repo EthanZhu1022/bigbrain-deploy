@@ -5,12 +5,9 @@ As part of the optional challenge, I have successfully deployed both the fronten
 ##  Frontend Deployment
 
 - Followed Vercel deployment instructions:
-  - Added, committed, and pushed all local changes to the `deploy` branch:
-    ```bash
-    git add .
-    git commit -m "Deploying to Vercel"
-    git push deploy
-    ```
+ Here's my deployed frontend:
+
+![Frontend Screenshot](./assets/frontend.jpeg)
   - Imported the project to Vercel using:
     - **GitHub** as the provider
     - **Correct directory selection** during setup (frontend folder)
@@ -19,14 +16,15 @@ As part of the optional challenge, I have successfully deployed both the fronten
     https://z5610836-bigbrain-fe-deploy.vercel.app/
     ```
 
-## ⚡ Backend Deployment (Bonus)
+## Backend Deployment (Bonus)
 
 - As a bonus, we have also deployed the backend to Vercel.
 - Ensured that the API is accessible from the frontend.
 - Updated API base URLs in the frontend to point to the deployed backend.
 - Verified that the frontend and backend work **seamlessly together** in production.
-
-## 🎯 Outcome
+![Backend Screenshot](./assets/backend.jpeg)
+![Vercel Dashboard](./assets/vercel-dashboard.jpeg)
+## Outcome
 
 - The deployed frontend is live and functional.
 - All API requests are correctly routed to the deployed backend.
