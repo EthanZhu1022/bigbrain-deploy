@@ -30,7 +30,7 @@ function App() {
             boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
           }}
         >
-          Dark Mode
+          Dark Mode 
         </button>
       </div>
 
