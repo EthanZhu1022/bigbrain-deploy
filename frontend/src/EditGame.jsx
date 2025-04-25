@@ -13,7 +13,7 @@ function EditGame({ token, showToast}) {
   const [thumbnail, setThumbnail] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5005/admin/games', {
+    axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       setGames(res.data.games);
@@ -28,7 +28,7 @@ function EditGame({ token, showToast}) {
 
   const updateGames = (newGameData) => {
     const updatedGames = games.map(g => String(g.id) === gameId ? newGameData : g);
-    axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
+    axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(() => {
       setGames(updatedGames);

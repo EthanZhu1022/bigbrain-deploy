@@ -12,7 +12,7 @@ function GameControl({ token, showToast }) {
 
   const fetchSessionInfo = async () => {
     try {
-        const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/status`, {
+        const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${sessionId}/status`, {
           headers: { Authorization: `Bearer ${token}` }
         });
       setSessionInfo(res.data.results);
@@ -25,14 +25,14 @@ function GameControl({ token, showToast }) {
 
   const handleNextQuestion = async () => {
     try {
-      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
+      await axios.post(`https://bigbrain-backend-qff3.onrender.com/admin/game/${gameId}/mutate`, {
         mutationType: 'ADVANCE',
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       showToast && showToast('Advanced to next question', 'success');
   
-      const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/status`, {
+      const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${sessionId}/status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
   
@@ -53,7 +53,7 @@ function GameControl({ token, showToast }) {
 
   const handleEndGame = async () => {
     try {
-      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
+      await axios.post(`https://bigbrain-backend-qff3.onrender.com/admin/game/${gameId}/mutate`, {
         mutationType: 'END',
       }, {
         headers: { Authorization: `Bearer ${token}` }

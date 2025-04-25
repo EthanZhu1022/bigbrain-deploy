@@ -34,7 +34,7 @@ function SessionResults({ token }) {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const res = await axios.get(`http://localhost:5005/admin/session/${sessionId}/results`, {
+        const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${sessionId}/results`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

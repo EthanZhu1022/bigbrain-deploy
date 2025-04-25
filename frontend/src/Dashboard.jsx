@@ -56,7 +56,7 @@ function Dashboard({ token }) {
    */
   const fetchGames = async () => {
     try {
-      const res = await axios.get('http://localhost:5005/admin/games', {
+      const res = await axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const sorted = sortGames(res.data.games || []);
@@ -82,7 +82,7 @@ function Dashboard({ token }) {
   
     try {
       const updatedGames = [...games, newGame];
-      await axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
+      await axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       await fetchGames();
@@ -131,7 +131,7 @@ function Dashboard({ token }) {
    */
   const confirmDeleteGame = () => {
     const updatedGames = games.filter(g => g.id !== gameToDelete.id);
-    axios.put('http://localhost:5005/admin/games', { games: updatedGames }, {
+    axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(() => {
       setGames(updatedGames);
@@ -148,7 +148,7 @@ function Dashboard({ token }) {
    */
   const startGame = async (gameId) => {
     try {
-      await axios.post(`http://localhost:5005/admin/game/${gameId}/mutate`, {
+      await axios.post(`https://bigbrain-backend-qff3.onrender.com/admin/game/${gameId}/mutate`, {
         mutationType: 'START'
       }, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -158,7 +158,7 @@ function Dashboard({ token }) {
       let updatedGames = [];
   
       for (let attempt = 0; attempt < 3; attempt++) {
-        const res = await axios.get('http://localhost:5005/admin/games', {
+        const res = await axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
           headers: { Authorization: `Bearer ${token}` }
         });
   
@@ -182,7 +182,7 @@ function Dashboard({ token }) {
         return g;
       });
   
-      await axios.put('http://localhost:5005/admin/games', {
+      await axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', {
         games: finalGames
       }, {
         headers: { Authorization: `Bearer ${token}` }

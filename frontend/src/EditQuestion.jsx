@@ -20,7 +20,7 @@ function EditQuestion({ token, showToast }) {
   });
 
   useEffect(() => {
-    axios.get('http://localhost:5005/admin/games', {
+    axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       const game = res.data.games.find(g => g.id === Number(gameId));
@@ -80,7 +80,7 @@ function EditQuestion({ token, showToast }) {
       return;
     }
 
-    axios.get('http://localhost:5005/admin/games', {
+    axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       const games = res.data.games.map(game => {
@@ -96,7 +96,7 @@ function EditQuestion({ token, showToast }) {
         return game;
       });
 
-      return axios.put('http://localhost:5005/admin/games', { games }, {
+      return axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games }, {
         headers: { Authorization: `Bearer ${token}` }
       });
     }).then(() => {

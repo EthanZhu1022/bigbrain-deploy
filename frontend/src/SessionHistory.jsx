@@ -16,7 +16,7 @@ function SessionHistory() {
     const fetchSessionMeta = async () => {
       const fetched = await Promise.all(localSessions.map(async (id) => {
         try {
-          const res = await axios.get(`http://localhost:5005/admin/session/${id}/status`, {
+          const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${id}/status`, {
             headers: { Authorization: `Bearer ${token}` }
           });
   
