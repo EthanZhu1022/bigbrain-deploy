@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
 import axios from 'axios';
@@ -26,9 +26,6 @@ function PlayGame() {
       });
 
       const playerId = response.data.playerId;
-
-      const statusRes = await axios.get(`https://bigbrain-backend-qff3.onrender.com/play/${playerId}/status`);
-      const statusData = statusRes.data;
 
       navigate(`/play/${playerId}/lobby`);
     } catch (err) {
