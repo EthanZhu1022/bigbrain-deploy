@@ -35,7 +35,7 @@ function SessionHistory() {
             }
             return null;
           } catch (err) {
-            alert(err);
+            void err;
             return null;
           }
         })
