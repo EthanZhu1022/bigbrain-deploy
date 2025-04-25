@@ -17,7 +17,7 @@ function App() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor, color: textColor, position: 'relative' }}>
-      <div style={{ position: 'absolute', top: '70px', right: '20px' }}>
+      <div style={{ position: 'absolute', bottom: '20px', right: '20px' }}>
         <button
           onClick={toggleDarkMode}
           style={{
