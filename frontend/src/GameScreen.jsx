@@ -91,42 +91,48 @@ function GameScreen({ showToast }) {
     }
 
     setSelectedAnswers(updated);
+    setAnswerSubmitted(false);
   };
 
   const handleSubmitAnswer = async () => {
     const questionId = currentQuestion.id;
     const answerData = selectedAnswers.find(a => a.questionId === questionId);
     const answerIds = answerData?.answerIds ?? [];
-
+  
     if (answerIds.length === 0) {
       showToast('You must choose!', 'danger');
       return;
     }
-
+  
     try {
-      await axios.put(`https://bigbrain-backend-qff3.onrender.com/play/${playerId}/answer`, {
+      const res = await axios.put(`https://bigbrain-backend-qff3.onrender.com/play/${playerId}/answer`, {
         answerIds
       });
-
-      const timeSpent = currentQuestion.time - timeLeft;
-      const correctAnswerIds = currentQuestion.answers
-        .map((a, i) => a.correct ? i : null)
-        .filter(i => i !== null);
-
-      setPerformance(prev => [...prev, {
-        question: currentQuestion.question,
-        correctAnswerIds,
-        selected: answerIds,
-        timeSpent,
-        totalTime: currentQuestion.time,
-        points: currentQuestion.points
-      }]);
-
-      setAnswerSubmitted(true);
+  
+      if (res.status === 200) {
+        const timeSpent = currentQuestion.time - timeLeft;
+        const correctAnswerIds = currentQuestion.answers
+          .map((a, i) => a.correct ? i : null)
+          .filter(i => i !== null);
+  
+        setPerformance(prev => [...prev, {
+          question: currentQuestion.question,
+          correctAnswerIds,
+          selected: answerIds,
+          timeSpent,
+          totalTime: currentQuestion.time,
+          points: currentQuestion.points
+        }]);
+  
+        setAnswerSubmitted(true);
+      } else {
+        showToast('Submission failed. Try again.', 'danger');
+      }
     } catch (err) {
       console.error('Failed to submit answer:', err);
+      showToast('Failed to submit answer.', 'danger');
     }
-  };
+  };  
 
   if (error) {
     return <Alert variant="danger" className="m-4">{error}</Alert>;
@@ -180,7 +186,7 @@ function GameScreen({ showToast }) {
 
       {!showResults && timeLeft > 0 && !answerSubmitted && (
         <div className="text-center">
-          <Button variant="success" size="lg" onClick={handleSubmitAnswer}>
+          <Button variant="success" size="lg" onClick={handleSubmitAnswer} disabled={answerSubmitted} >
             Submit Answer
           </Button>
         </div>
