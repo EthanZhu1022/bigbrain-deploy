@@ -348,4 +348,127 @@ function Dashboard({ token }) {
           </Col>
         ))}
       </Row>
-     
+      {/* Create Game Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Game</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="text"
+            placeholder="Enter game name"
+            value={gameName}
+            onChange={(e) => setGameName(e.target.value)}
+          />
+          <Form.Label>Or Upload Game File</Form.Label>
+          <Form.Control
+            type="file"
+            accept=".json"
+            onChange={handleFileUpload}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={createGame}>
+            Create
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Join Game Modal */}
+      <Modal show={showJoinModal} onHide={() => setShowJoinModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Join Game</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="text"
+            placeholder="Enter session ID"
+            value={joinSessionId}
+            onChange={(e) => setJoinSessionId(e.target.value)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowJoinModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleJoinGame}>
+            Join
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Delete Game Modal */}
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete <strong>{gameToDelete?.name}</strong>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDeleteGame}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Session Started Modal */}
+      <Modal
+        show={showSessionModal}
+        onHide={() => {
+          setShowSessionModal(false);
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Game Session Started</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Session ID:{" "}
+            <strong>{activeSession?.sessionId || "Loading..."}</strong>
+          </p>
+          <p>Share this link with players to join the game:</p>
+          <div className="d-flex align-items-center">
+            <Form.Control
+              type="text"
+              value={
+                activeSession?.sessionId
+                  ? `${window.location.origin}/play/${activeSession.sessionId}`
+                  : "Loading..."
+              }
+              readOnly
+            />
+            <Button
+              variant="primary"
+              className="ms-2"
+              onClick={copySessionLink}
+              disabled={!activeSession?.sessionId}
+            >
+              Copy Link
+            </Button>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowSessionModal(false);
+            }}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Container>
+  );
+}
+
+export default Dashboard;
