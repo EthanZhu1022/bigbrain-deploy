@@ -19,10 +19,11 @@ function GameScreen({ showToast }) {
   const [gameEnded, setGameEnded] = useState(false);
 
   useEffect(() => {
-      const poll = async () => {
+    if (gameEnded) return;
+    const poll = async () => {
       try {
         const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/play/${playerId}/question`);
-
+        
         if (res.data.question === null) {
           clearInterval(intervalRef.current);
           setGameEnded(true);
