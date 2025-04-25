@@ -178,7 +178,70 @@ function GameScreen({ showToast }) {
         })}
       </Row>
 
-      
+      {!showResults && timeLeft > 0 && !answerSubmitted && (
+        <div className="text-center">
+          <Button variant="success" size="lg" onClick={handleSubmitAnswer}>
+            Submit Answer
+          </Button>
+        </div>
+      )}
+
+      {showResults && (
+        <Card className="mt-4">
+          <Card.Body>
+            <Card.Title>Correct Answers</Card.Title>
+            <ul>
+              {currentQuestion.answers.map((ans, idx) =>
+                ans.correct ? <li key={idx}>{ans.text}</li> : null
+              )}
+            </ul>
+          </Card.Body>
+        </Card>
+      )}
+
+      {gameEnded && (
+        <Modal show onHide={() => navigate('/')}>
+          <Modal.Header closeButton>
+            <Modal.Title>Your Quiz Results</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p><strong>Scoring System Explanation:</strong></p>
+            <ul>
+              <li>Each question's score = Question points × Speed factor</li>
+              <li>Speed factor = Remaining time / Total time, minimum is 0.1</li>
+              <li>Incorrect or unanswered questions score 0</li>
+            </ul>
+            <hr />
+            <h5>Performance Details:</h5>
+            <hr />
+            <h5>Total Score: {
+              performance.reduce((acc, entry) => {
+                const correct = entry.correctAnswerIds.every(id => entry.selected.includes(id));
+                const speedFactor = Math.max(0.1, (entry.totalTime - entry.timeSpent) / entry.totalTime);
+                const score = correct ? Math.round(entry.points * speedFactor) : 0;
+                return acc + score;
+              }, 0)
+            } points</h5>
+
+            <ul>
+              {performance.map((entry, i) => {
+                const correct = entry.correctAnswerIds.every(id => entry.selected.includes(id));
+                const speedFactor = Math.max(0.1, (entry.totalTime - entry.timeSpent) / entry.totalTime);
+                const score = correct ? Math.round(entry.points * speedFactor) : 0;
+                return (
+                  <li key={i}>
+                    <strong>Question {i + 1}:</strong> {entry.question}<br />
+                    Time spent: {entry.timeSpent}s, Score: {score} points
+                  </li>
+                );
+              })}
+            </ul>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => navigate('/')}>Return to Login Page</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </Container>
   );
 }
