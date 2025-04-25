@@ -49,7 +49,7 @@ function Pages() {
 
   const logout = async () => {
     try{
-      await axios.post('http://localhost:5005/admin/auth/logout', {}, {
+      await axios.post('https://bigbrain-backend-qff3.onrender.com/admin/auth/logout', {}, {
         headers: {
           'Authorization': `Bearer ${token}`,
         }
@@ -97,10 +97,10 @@ function Pages() {
         <Route path="/game/:gameId" element={<EditGame token={token} showToast={showToast} />} />
         <Route path="/game/:gameId/question/:questionId" element={<EditQuestion token={token} showToast={showToast} />} />
         <Route path="/play/:sessionId" element={<PlayGame />} />
-        <Route path="/play/:sessionId/game" element={<GameScreen />} />
+        <Route path="/play/:playerId/game" element={<GameScreen showToast={showToast}/>} />
         <Route path="/session/:sessionId" element={<SessionResults token={token} />} />
         <Route path="/gamecontrol/:gameId/:sessionId" element={<GameControl token={token} showToast={showToast} />} />
-        <Route path="/play/:sessionId/lobby" element={<Lobby />} />
+        <Route path="/play/:playerId/lobby" element={<Lobby />} />
         <Route path="/history/:gameId" element={<SessionHistory />} />
       </Routes>
     </Container>

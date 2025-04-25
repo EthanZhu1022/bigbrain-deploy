@@ -21,18 +21,16 @@ function PlayGame() {
 
     setIsJoining(true);
     try {
-      const response = await axios.post(`http://localhost:5005/play/join/${sessionId}`, {
+      const response = await axios.post(`https://bigbrain-backend-qff3.onrender.com/play/join/${sessionId}`, {
         name: playerName
       });
 
       const playerId = response.data.playerId;
-      localStorage.setItem('playerId', playerId);
-      localStorage.setItem('playerName', playerName);
 
-      const statusRes = await axios.get(`http://localhost:5005/play/${playerId}/status`);
+      const statusRes = await axios.get(`https://bigbrain-backend-qff3.onrender.com/play/${playerId}/status`);
       const statusData = statusRes.data;
 
-      navigate(`/play/${sessionId}/lobby`);
+      navigate(`/play/${playerId}/lobby`);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to join game');
     } finally {
