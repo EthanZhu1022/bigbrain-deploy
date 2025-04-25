@@ -1,20 +1,28 @@
-import { useEffect, useState } from 'react';
-import { Container, Card, Button, Row, Col, Modal, Form } from 'react-bootstrap';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import {
+  Container,
+  Card,
+  Button,
+  Row,
+  Col,
+  Modal,
+  Form,
+} from "react-bootstrap";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function getEmailFromToken(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.email;
   } catch {
-    return '';
+    return "";
   }
 }
 
 /**
  * Dashboard Component
- * 
+ *
  * Displays a list of games and provides functionality to:
  * - Create new games
  * - Delete games
@@ -25,11 +33,11 @@ function getEmailFromToken(token) {
 function Dashboard({ token }) {
   const [games, setGames] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [gameName, setGameName] = useState('');
+  const [gameName, setGameName] = useState("");
   const [uploadedQuestions, setUploadedQuestions] = useState([]);
-  const [thumbnail, setThumbnail] = useState('');
+  const [thumbnail, setThumbnail] = useState("");
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const [joinSessionId, setJoinSessionId] = useState('');
+  const [joinSessionId, setJoinSessionId] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [gameToDelete, setGameToDelete] = useState(null);
   const [showSessionModal, setShowSessionModal] = useState(false);
@@ -56,15 +64,18 @@ function Dashboard({ token }) {
    */
   const fetchGames = async () => {
     try {
-      const res = await axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        "https://bigbrain-backend-qff3.onrender.com/admin/games",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const sorted = sortGames(res.data.games || []);
       setGames(sorted);
     } catch (err) {
-      console.error('Failed to load games:', err);
+      console.error("Failed to load games:", err);
     }
-  };  
+  };
 
   /**
    * Creates a new game
@@ -77,21 +88,25 @@ function Dashboard({ token }) {
       thumbnail: thumbnail,
       questions: uploadedQuestions,
       active: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
-  
+
     try {
       const updatedGames = [...games, newGame];
-      await axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.put(
+        "https://bigbrain-backend-qff3.onrender.com/admin/games",
+        { games: updatedGames },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       await fetchGames();
       setShowModal(false);
-      setGameName('');
+      setGameName("");
       setUploadedQuestions([]);
-      setThumbnail('');
+      setThumbnail("");
     } catch (err) {
-      console.error('Failed to create game:', err);
+      console.error("Failed to create game:", err);
     }
   };
 
@@ -99,30 +114,31 @@ function Dashboard({ token }) {
     if (!joinSessionId.trim()) return;
     navigate(`/play/${joinSessionId}`);
     setShowJoinModal(false);
-    setJoinSessionId('');
+    setJoinSessionId("");
   };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     try {
       const text = await file.text();
       const jsonData = JSON.parse(text);
-  
+
       if (!jsonData.name || !Array.isArray(jsonData.questions)) {
-        alert("Invalid JSON structure. File must contain 'name' and 'questions'.");
+        alert(
+          "Invalid JSON structure. File must contain 'name' and 'questions'."
+        );
         return;
       }
-  
+
       setGameName(jsonData.name);
       setUploadedQuestions(jsonData.questions);
       if (jsonData.thumbnail) {
         setThumbnail(jsonData.thumbnail);
       }
-
     } catch (err) {
-      alert("Error parsing JSON file.");
+      alert("Error parsing JSON file.",err);
     }
   };
 
@@ -130,16 +146,23 @@ function Dashboard({ token }) {
    * Deletes a game
    */
   const confirmDeleteGame = () => {
-    const updatedGames = games.filter(g => g.id !== gameToDelete.id);
-    axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(() => {
-      setGames(updatedGames);
-      setShowDeleteModal(false);
-      setGameToDelete(null);
-    }).catch(err => {
-      console.error('Failed to delete game:', err);
-    });
+    const updatedGames = games.filter((g) => g.id !== gameToDelete.id);
+    axios
+      .put(
+        "https://bigbrain-backend-qff3.onrender.com/admin/games",
+        { games: updatedGames },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(() => {
+        setGames(updatedGames);
+        setShowDeleteModal(false);
+        setGameToDelete(null);
+      })
+      .catch((err) => {
+        console.error("Failed to delete game:", err);
+      });
   };
 
   /**
@@ -148,68 +171,78 @@ function Dashboard({ token }) {
    */
   const startGame = async (gameId) => {
     try {
-      await axios.post(`https://bigbrain-backend-qff3.onrender.com/admin/game/${gameId}/mutate`, {
-        mutationType: 'START'
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-  
+      await axios.post(
+        `https://bigbrain-backend-qff3.onrender.com/admin/game/${gameId}/mutate`,
+        {
+          mutationType: "START",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       let sessionId = null;
       let updatedGames = [];
-  
+
       for (let attempt = 0; attempt < 3; attempt++) {
-        const res = await axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-  
+        const res = await axios.get(
+          "https://bigbrain-backend-qff3.onrender.com/admin/games",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         updatedGames = res.data.games;
-        const game = updatedGames.find(g => g.id === gameId);
+        const game = updatedGames.find((g) => g.id === gameId);
         sessionId = game?.active;
-  
+
         if (sessionId) break;
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
-  
+
       if (!sessionId) {
-        console.error('No session ID found in game data');
+        console.error("No session ID found in game data");
         return;
       }
 
-      const finalGames = updatedGames.map(g => {
+      const finalGames = updatedGames.map((g) => {
         if (g.id === gameId) {
           return { ...g, active: sessionId };
         }
         return g;
       });
-  
-      await axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', {
-        games: finalGames
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
+
+      await axios.put(
+        "https://bigbrain-backend-qff3.onrender.com/admin/games",
+        {
+          games: finalGames,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       setGames(sortGames(updatedGames));
       setActiveSession({ gameId, sessionId });
       setShowSessionModal(true);
-      
-    const sessionMap = JSON.parse(localStorage.getItem('sessionMap') || '{}');
-    if (!sessionMap[gameId]) sessionMap[gameId] = [];
-    if (!sessionMap[gameId].includes(sessionId)) {
-      sessionMap[gameId].push(sessionId);
-      localStorage.setItem('sessionMap', JSON.stringify(sessionMap));
-    }
 
+      const sessionMap = JSON.parse(localStorage.getItem("sessionMap") || "{}");
+      if (!sessionMap[gameId]) sessionMap[gameId] = [];
+      if (!sessionMap[gameId].includes(sessionId)) {
+        sessionMap[gameId].push(sessionId);
+        localStorage.setItem("sessionMap", JSON.stringify(sessionMap));
+      }
     } catch (err) {
-      console.error('Failed to start game:', err);
+      console.error("Failed to start game:", err);
     }
-  };  
+  };
 
   /**
    * Copies the session link to clipboard
    */
   const copySessionLink = () => {
     if (!activeSession?.sessionId) {
-      console.error('No active session ID available');
+      console.error("No active session ID available");
       return;
     }
     const url = `${window.location.origin}/play/${activeSession.sessionId}`;
@@ -221,132 +254,98 @@ function Dashboard({ token }) {
       <h2>Dashboard</h2>
       <Button onClick={() => setShowModal(true)}>Create New Game</Button>
       &nbsp;
-      <Button variant="secondary" onClick={() => setShowJoinModal(true)}>Join Game</Button>
+      <Button variant="secondary" onClick={() => setShowJoinModal(true)}>
+        Join Game
+      </Button>
       <Row className="mt-3">
-        {games.map(game => (
-         <Col key={game.id} md={4} className="mb-4 d-flex">
-         <Card className="w-100 h-100 d-flex flex-column justify-content-between" style={{ position: 'relative' }}>
-           <div onClick={() => navigate(`/game/${game.id}`)} style={{ cursor: 'pointer' }}>
-           <Card.Img variant="top" src={game.thumbnail || 'placeholder.png'} style={{ height: '180px', width: '100%', objectFit: 'fill', objectPosition: 'center' }} />
-           </div>
-           <Button
-             variant="danger"
-             size="sm"
-             style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }}
-             onClick={(e) => {
-               e.stopPropagation();
-               setGameToDelete(game);
-               setShowDeleteModal(true);
-             }}
-           >
-             Del
-           </Button>
-           <Card.Body style={{ cursor: 'pointer' }} onClick={() => navigate(`/game/${game.id}`)}>
-             <Card.Title className="text-truncate">{game.name}</Card.Title>
-             <Card.Text style={{ fontSize: '0.9rem', lineHeight: '1.2rem' }}>
-               Questions: {game.questions.length}<br />
-               Duration: {game.questions.reduce((acc, q) => acc + (q.time || 0), 0)} seconds
-             </Card.Text>
-             <div className="d-flex flex-wrap gap-2 align-items-center">
-             <Button variant={game.active ? "success" : "primary"} onClick={(e) => { e.stopPropagation(); if (!game.active) { startGame(game.id); } else { navigate(`/gamecontrol/${game.id}/${game.active}`); }}} >
-                {game.active ? "Control Game" : "Start Game"}
-             </Button>
-              {game.active && ( <span style={{ fontSize: '0.8rem' }}><strong>SessionId:</strong> {game.active}</span> )} 
-             </div>
-             <div className="mt-2">
-              <Button variant="outline-secondary" size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/history/${game.id}`);}} >
-                View Past Sessions
+        {games.map((game) => (
+          <Col key={game.id} md={4} className="mb-4 d-flex">
+            <Card
+              className="w-100 h-100 d-flex flex-column justify-content-between"
+              style={{ position: "relative" }}
+            >
+              <div
+                onClick={() => navigate(`/game/${game.id}`)}
+                style={{ cursor: "pointer" }}
+              >
+                <Card.Img
+                  variant="top"
+                  src={game.thumbnail || "placeholder.png"}
+                  style={{
+                    height: "180px",
+                    width: "100%",
+                    objectFit: "fill",
+                    objectPosition: "center",
+                  }}
+                />
+              </div>
+              <Button
+                variant="danger"
+                size="sm"
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "8px",
+                  zIndex: 1,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setGameToDelete(game);
+                  setShowDeleteModal(true);
+                }}
+              >
+                Del
               </Button>
-             </div>
-            </Card.Body>
-          </Card>
-        </Col>       
+              <Card.Body
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/game/${game.id}`)}
+              >
+                <Card.Title className="text-truncate">{game.name}</Card.Title>
+                <Card.Text style={{ fontSize: "0.9rem", lineHeight: "1.2rem" }}>
+                  Questions: {game.questions.length}
+                  <br />
+                  Duration:{" "}
+                  {game.questions.reduce(
+                    (acc, q) => acc + (q.time || 0),
+                    0
+                  )}{" "}
+                  seconds
+                </Card.Text>
+                <div className="d-flex flex-wrap gap-2 align-items-center">
+                  <Button
+                    variant={game.active ? "success" : "primary"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!game.active) {
+                        startGame(game.id);
+                      } else {
+                        navigate(`/gamecontrol/${game.id}/${game.active}`);
+                      }
+                    }}
+                  >
+                    {game.active ? "Control Game" : "Start Game"}
+                  </Button>
+                  {game.active && (
+                    <span style={{ fontSize: "0.8rem" }}>
+                      <strong>SessionId:</strong> {game.active}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-2">
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/history/${game.id}`);
+                    }}
+                  >
+                    View Past Sessions
+                  </Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
       </Row>
-
-      {/* Create Game Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create New Game</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control type="text" placeholder="Enter game name" value={gameName} onChange={e => setGameName(e.target.value)} />
-          <Form.Label>Or Upload Game File</Form.Label>
-          <Form.Control type="file" accept=".json" onChange={handleFileUpload} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={createGame}>Create</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Join Game Modal */}
-      <Modal show={showJoinModal} onHide={() => setShowJoinModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Join Game</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control
-            type="text"
-            placeholder="Enter session ID"
-            value={joinSessionId}
-            onChange={e => setJoinSessionId(e.target.value)}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowJoinModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleJoinGame}>Join</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Delete Game Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to delete <strong>{gameToDelete?.name}</strong>?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
-          <Button variant="danger" onClick={confirmDeleteGame}>Delete</Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Session Started Modal */}
-      <Modal show={showSessionModal} onHide={() => { setShowSessionModal(false); }}centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Game Session Started</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Session ID: <strong>{activeSession?.sessionId || 'Loading...'}</strong></p>
-          <p>Share this link with players to join the game:</p>
-          <div className="d-flex align-items-center">
-            <Form.Control 
-              type="text" 
-              value={activeSession?.sessionId ? `${window.location.origin}/play/${activeSession.sessionId}` : 'Loading...'} 
-              readOnly 
-            />
-            <Button 
-              variant="primary" 
-              className="ms-2" 
-              onClick={copySessionLink}
-              disabled={!activeSession?.sessionId}
-            >
-              Copy Link
-            </Button>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-        <Button variant="secondary" onClick={() => {
-            setShowSessionModal(false);
-            if (activeSession?.sessionId) {
-            }
-          }}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
-  );
-}
-
-export default Dashboard;
+     
