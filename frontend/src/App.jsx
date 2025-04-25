@@ -16,8 +16,8 @@ function App() {
   const textColor = darkMode ? '#ffffff' : '#000000';
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor, color: textColor }}>
-      <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+    <div style={{ minHeight: '100vh', backgroundColor, color: textColor, position: 'relative' }}>
+      <div style={{ position: 'absolute', top: '70px', right: '20px' }}>
         <button
           onClick={toggleDarkMode}
           style={{
@@ -26,10 +26,11 @@ function App() {
             border: 'none',
             padding: '8px 12px',
             borderRadius: '5px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
           }}
         >
-          Dark Mode
+          Toggle Dark Mod
         </button>
       </div>
 
