@@ -371,7 +371,7 @@ function Dashboard({ token }) {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={createGame}>
+          <Button variant="primary" data-testid="create-game-button" onClick={createGame}>
             Create
           </Button>
         </Modal.Footer>
