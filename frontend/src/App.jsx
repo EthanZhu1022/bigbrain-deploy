@@ -3,14 +3,15 @@ import {
 } from "react-router-dom";
 import Pages from './Pages.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 
 function App() {
-  return(
-    <Router>
-      <Pages />
-    </Router>
-  )
+  return (
+    <div style={{ minHeight: '100vh', backgroundColor: '#d0ebff' }}>
+      <Router>
+        <Pages />
+      </Router>
+    </div>
+  );
 }
 
 export default App;
