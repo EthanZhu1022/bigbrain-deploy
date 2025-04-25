@@ -29,3 +29,14 @@ As part of the optional challenge, I have successfully deployed both the fronten
 - The deployed frontend is live and functional.
 - All API requests are correctly routed to the deployed backend.
 - My full-stack deployment demonstrates end-to-end functionality beyond the core requirements.
+---
+##  Dark Mode Support
+
+We’ve added **dark mode** to enhance user experience and reduce eye strain in low-light environments.
+
+###  Features
+- Manual toggle included for user control.
+
+### How to use
+ Use the dark mode button in the top-right corner to switch themes.
+
