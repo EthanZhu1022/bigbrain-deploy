@@ -2,6 +2,7 @@
 We implemented dark mode to improve the user experience and accessibility of the app, especially in low-light environments.
 
 Why?
+
 -To make the UI easier on the eyes during nighttime or long usage sessions.
 
 -To give users control over how they view the app.
