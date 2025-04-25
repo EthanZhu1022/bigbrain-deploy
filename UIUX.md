@@ -13,3 +13,4 @@ How It Works
 -You can manually toggle between light and dark modes using the theme switcher.
 -Your choice is saved, so it stays consistent across sessions.
 
+# Our UI is seamless and easy to use for our users
