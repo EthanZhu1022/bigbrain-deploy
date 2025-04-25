@@ -1,40 +1,48 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Table, Button } from 'react-bootstrap';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Table, Button } from "react-bootstrap";
+import axios from "axios";
 
 function SessionHistory() {
   const { gameId } = useParams();
   const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const sessionMap = JSON.parse(localStorage.getItem('sessionMap') || '{}');
+    const sessionMap = JSON.parse(localStorage.getItem("sessionMap") || "{}");
     const localSessions = sessionMap[gameId] || [];
-  
+
     const fetchSessionMeta = async () => {
-      const fetched = await Promise.all(localSessions.map(async (id) => {
-        try {
-          const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${id}/status`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-  
-          const session = res.data.results;
-          if (!session.active) {
-            return {
-              id,
-              createdAt: session.isoTimeLastQuestionStarted || new Date().toISOString(),
-            };
+      const fetched = await Promise.all(
+        localSessions.map(async (id) => {
+          try {
+            const res = await axios.get(
+              `https://bigbrain-backend-qff3.onrender.com/admin/session/${id}/status`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            const session = res.data.results;
+            if (!session.active) {
+              return {
+                id,
+                createdAt:
+                  session.isoTimeLastQuestionStarted ||
+                  new Date().toISOString(),
+              };
+            }
+            return null;
+          } catch (err) {
+            alert(err);
+            return null;
           }
-          return null;
-        } catch (err) {
-          return null;
-        }
-      }));
+        })
+      );
 
       const filteredSorted = fetched
-        .filter(s => s !== null && s !== undefined)
+        .filter((s) => s !== null && s !== undefined)
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setSessions(filteredSorted);
     };
@@ -71,7 +79,7 @@ function SessionHistory() {
           ))}
         </tbody>
       </Table>
-      <Button variant="secondary" onClick={() => navigate('/dashboard')}>
+      <Button variant="secondary" onClick={() => navigate("/dashboard")}>
         Back to Dashboard
       </Button>
     </Container>

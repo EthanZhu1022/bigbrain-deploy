@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Table, Card } from 'react-bootstrap';
-import axios from 'axios';
-import { useParams,useNavigate  } from 'react-router-dom';
-import { Bar, Line } from 'react-chartjs-2';
+import { useEffect, useState } from "react";
+import { Container, Table, Card } from "react-bootstrap";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+} from "chart.js";
 
 ChartJS.register(
   CategoryScale,
@@ -27,28 +27,29 @@ ChartJS.register(
 );
 
 function SessionResults({ token }) {
-  const { sessionId  } = useParams();
+  const { sessionId } = useParams();
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const res = await axios.get(`https://bigbrain-backend-qff3.onrender.com/admin/session/${sessionId}/results`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        const res = await axios.get(
+          `https://bigbrain-backend-qff3.onrender.com/admin/session/${sessionId}/results`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
           }
-        });
-  
+        );
+
         setResults(res.data.results || []);
       } catch (err) {
         setResults([]);
+        alert(err);
       }
     };
-  
+
     fetchResults();
   }, [sessionId, token]);
-  
 
   const calculatePlayerScore = (player) => {
     let totalScore = 0;
@@ -57,8 +58,13 @@ function SessionResults({ token }) {
 
       const questionDuration = ans.questionDuration || 30;
       const timeTaken =
-        (new Date(ans.answeredAt).getTime() - new Date(ans.questionStartedAt).getTime()) / 1000;
-      const speedFactor = Math.max(0.1, (questionDuration - timeTaken) / questionDuration);
+        (new Date(ans.answeredAt).getTime() -
+          new Date(ans.questionStartedAt).getTime()) /
+        1000;
+      const speedFactor = Math.max(
+        0.1,
+        (questionDuration - timeTaken) / questionDuration
+      );
       const basePoints = 100;
 
       totalScore += speedFactor * basePoints;
@@ -67,78 +73,84 @@ function SessionResults({ token }) {
   };
 
   const getCorrectnessData = () => {
-    const questionIds = results.flatMap(p =>
-      Array.isArray(p.answers)
-        ? p.answers
-            .map(a => typeof a.questionId === 'number' ? a.questionId : -1)
-        : []
-    ).filter(id => id >= 0);
-  
+    const questionIds = results
+      .flatMap((p) =>
+        Array.isArray(p.answers)
+          ? p.answers.map((a) => typeof a.questionId === "number" ? a.questionId : -1 ) : []
+      )
+      .filter((id) => id >= 0);
+
     if (questionIds.length === 0) {
       return {
         labels: [],
-        datasets: [{
-          label: '% Correct',
-          data: [],
-        }]
+        datasets: [
+          {
+            label: "% Correct",
+            data: [],
+          },
+        ],
       };
     }
-  
+
     const questionCount = Math.max(...questionIds) + 1;
     const correctPerQuestion = Array(questionCount).fill(0);
     const totalPerQuestion = Array(questionCount).fill(0);
-  
-    results.forEach(player => {
+
+    results.forEach((player) => {
       if (!Array.isArray(player.answers)) return;
-      player.answers.forEach(ans => {
-        if (typeof ans.questionId !== 'number') return;
+      player.answers.forEach((ans) => {
+        if (typeof ans.questionId !== "number") return;
         totalPerQuestion[ans.questionId]++;
         if (ans.correct) correctPerQuestion[ans.questionId]++;
       });
     });
-  
+
     return {
       labels: correctPerQuestion.map((_, i) => `Q${i + 1}`),
-      datasets: [{
-        label: '% Correct',
-        data: correctPerQuestion.map((c, i) =>
-          totalPerQuestion[i] > 0
-            ? Math.round((c / totalPerQuestion[i]) * 100)
-            : 0
-        ),
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-      }]
+      datasets: [
+        {
+          label: "% Correct",
+          data: correctPerQuestion.map((c, i) =>
+            totalPerQuestion[i] > 0
+              ? Math.round((c / totalPerQuestion[i]) * 100)
+              : 0
+          ),
+          backgroundColor: "rgba(75, 192, 192, 0.5)",
+        },
+      ],
     };
   };
 
   const getResponseTimeData = () => {
-    const questionIds = results.flatMap(p =>
-      Array.isArray(p.answers)
-        ? p.answers
-            .map(a => typeof a.questionId === 'number' ? a.questionId : -1)
-        : []
-    ).filter(id => id >= 0);
-  
+    const questionIds = results
+      .flatMap((p) =>
+        Array.isArray(p.answers)
+          ? p.answers.map((a) => typeof a.questionId === "number" ? a.questionId : -1) : []
+      )
+      .filter((id) => id >= 0);
+
     if (questionIds.length === 0) {
       return {
         labels: [],
-        datasets: [{
-          label: 'Average Time (s)',
-          data: [],
-        }]
+        datasets: [
+          {
+            label: "Average Time (s)",
+            data: [],
+          },
+        ],
       };
     }
-  
+
     const questionCount = Math.max(...questionIds) + 1;
     const totalTime = Array(questionCount).fill(0);
     const count = Array(questionCount).fill(0);
-  
-    results.forEach(player => {
+
+    results.forEach((player) => {
       if (!Array.isArray(player.answers)) return;
-      player.answers.forEach(ans => {
-        if (typeof ans.questionId !== 'number') return;
+      player.answers.forEach((ans) => {
+        if (typeof ans.questionId !== "number") return;
         if (!ans.answeredAt || !ans.questionStartedAt) return;
-  
+
         const time =
           (new Date(ans.answeredAt) - new Date(ans.questionStartedAt)) / 1000;
         if (!isNaN(time)) {
@@ -147,17 +159,20 @@ function SessionResults({ token }) {
         }
       });
     });
-  
+
     return {
       labels: totalTime.map((_, i) => `Q${i + 1}`),
-      datasets: [{
-        label: 'Average Time (s)',
-        data: totalTime.map((t, i) =>
-          count[i] > 0 ? (t / count[i]).toFixed(2) : 0),
-        fill: false,
-        borderColor: 'rgba(153, 102, 255, 0.8)',
-        tension: 0.3,
-      }]
+      datasets: [
+        {
+          label: "Average Time (s)",
+          data: totalTime.map((t, i) =>
+            count[i] > 0 ? (t / count[i]).toFixed(2) : 0
+          ),
+          fill: false,
+          borderColor: "rgba(153, 102, 255, 0.8)",
+          tension: 0.3,
+        },
+      ],
     };
   };
 
@@ -178,7 +193,7 @@ function SessionResults({ token }) {
             </thead>
             <tbody>
               {[...results]
-                .map(p => ({ ...p, totalScore: calculatePlayerScore(p) }))
+                .map((p) => ({ ...p, totalScore: calculatePlayerScore(p) }))
                 .sort((a, b) => b.totalScore - a.totalScore)
                 .slice(0, 5)
                 .map((player, i) => (
@@ -210,17 +225,34 @@ function SessionResults({ token }) {
       <Card className="mb-4">
         <Card.Header>Scoring System Explanation</Card.Header>
         <Card.Body>
-          <p><strong>Final Score = Sum of (Question Points × Speed Factor)</strong></p>
+          <p>
+            <strong>
+              Final Score = Sum of (Question Points × Speed Factor)
+            </strong>
+          </p>
           <ul>
-            <li><strong>Speed Factor</strong> = (Remaining Time / Total Time), minimum 0.1</li>
-            <li>Each question is worth <strong>100 points</strong> if answered correctly</li>
+            <li>
+              <strong>Speed Factor</strong> = (Remaining Time / Total Time),
+              minimum 0.1
+            </li>
+            <li>
+              Each question is worth <strong>100 points</strong> if answered
+              correctly
+            </li>
             <li>Incorrect or unanswered questions yield 0 points</li>
-            <li>This scoring rewards both <strong>accuracy and speed</strong></li>
+            <li>
+              This scoring rewards both <strong>accuracy and speed</strong>
+            </li>
           </ul>
         </Card.Body>
       </Card>
       <div className="text-center mb-4">
-        <button className="btn btn-outline-primary" onClick={() => navigate('/dashboard')} >Back to Dashboard</button>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/dashboard")}
+        >
+          Back to Dashboard
+        </button>
       </div>
     </Container>
   );
