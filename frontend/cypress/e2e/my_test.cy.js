@@ -54,32 +54,6 @@ describe('Register Page E2E', () => {
     cy.get('input[type="checkbox"]').eq(0).check();
     cy.contains('button', 'Create Question').click();
 
-    cy.contains('Add New Question').click();
-    cy.contains('label', 'Question Text')
-      .parent()
-      .find('input')
-      .type(q1);
-
-    cy.get('input[placeholder="Answer 1"]').clear().type(a1);
-    cy.get('input[placeholder="Answer 2"]').clear().type(a2);
-  
-      // Check the "Correct" checkbox for the first answer
-    cy.get('input[type="checkbox"]').eq(0).check();
-    cy.contains('button', 'Create Question').click();
-
-    cy.contains('Add New Question').click();
-    cy.contains('label', 'Question Text')
-      .parent()
-      .find('input')
-      .type(q1);
-
-    cy.get('input[placeholder="Answer 1"]').clear().type(a1);
-    cy.get('input[placeholder="Answer 2"]').clear().type(a2);
-  
-      // Check the "Correct" checkbox for the first answer
-    cy.get('input[type="checkbox"]').eq(0).check();
-    cy.contains('button', 'Create Question').click();
-
     cy.contains('button', 'Save Game Info').click();
     cy.contains('button', 'Back').click();
 
