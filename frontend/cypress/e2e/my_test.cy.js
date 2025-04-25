@@ -15,6 +15,7 @@ describe('Register Page E2E', () => {
     cy.get('input[type="password"]').eq(1).type(password); // Confirm Password
 
     cy.get('button[type="submit"]').click();
+
     expect(cy.location('pathname').should('eq', '/dashboard'));
 
     cy.contains('button', 'Create New Game').click();
