@@ -55,7 +55,7 @@ function Login({ successJob, token, showToast }) {
             <Button variant="primary" type="submit" className="w-100">Login</Button>
           </Form>
           <div className="text-center text-muted" style={{ fontSize: '0.9rem' }}>
-            Don't have an account?&nbsp;Try&nbsp;
+            Don&apos;t have an account?&nbsp;Try&nbsp;
             <Button variant="link" className="p-0 ms-1" onClick={() => navigate('/register')}>
               Register!
             </Button>

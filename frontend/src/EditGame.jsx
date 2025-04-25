@@ -1,40 +1,50 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Container, Button, ListGroup, Form, Row, Col } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Container, Button, ListGroup, Form } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-function EditGame({ token, showToast}) {
+function EditGame({ token, showToast }) {
   const { gameId } = useParams();
   const navigate = useNavigate();
 
   const [games, setGames] = useState([]);
   const [game, setGame] = useState(null);
-  const [name, setName] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
+  const [name, setName] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
 
   useEffect(() => {
-    axios.get('https://bigbrain-backend-qff3.onrender.com/admin/games', {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      setGames(res.data.games);
-      const target = res.data.games.find(g => g.id.toString() === gameId);
-      if (target) {
-        setGame(target);
-        setName(target.name);
-        setThumbnail(target.thumbnail || '');
-      }
-    });
+    axios
+      .get("https://bigbrain-backend-qff3.onrender.com/admin/games", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setGames(res.data.games);
+        const target = res.data.games.find((g) => g.id.toString() === gameId);
+        if (target) {
+          setGame(target);
+          setName(target.name);
+          setThumbnail(target.thumbnail || "");
+        }
+      });
   }, [gameId, token]);
 
   const updateGames = (newGameData) => {
-    const updatedGames = games.map(g => String(g.id) === gameId ? newGameData : g);
-    axios.put('https://bigbrain-backend-qff3.onrender.com/admin/games', { games: updatedGames }, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(() => {
-      setGames(updatedGames);
-      setGame(newGameData);
-      showToast && showToast('Game info saved successfully!', 'success');
-    });
+    const updatedGames = games.map((g) =>
+      String(g.id) === gameId ? newGameData : g
+    );
+    axios
+      .put(
+        "https://bigbrain-backend-qff3.onrender.com/admin/games",
+        { games: updatedGames },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then(() => {
+        setGames(updatedGames);
+        setGame(newGameData);
+        showToast && showToast("Game info saved successfully!", "success");
+      });
   };
 
   const deleteQuestion = (index) => {
@@ -57,20 +67,31 @@ function EditGame({ token, showToast}) {
       <Form className="mb-4">
         <Form.Group className="mb-3">
           <Form.Label>Game Name</Form.Label>
-          <Form.Control value={name} onChange={e => setName(e.target.value)} />
+          <Form.Control
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Label>Thumbnail</Form.Label>
-          <Form.Control value={thumbnail} onChange={e => setThumbnail(e.target.value)} />
+          <Form.Control
+            value={thumbnail}
+            onChange={(e) => setThumbnail(e.target.value)}
+          />
         </Form.Group>
         <Button onClick={saveMetadata}>Save Game Info</Button>&nbsp;
-        <Button variant="secondary" onClick={() => navigate('/dashboard')}>Back</Button>
+        <Button variant="secondary" onClick={() => navigate("/dashboard")}>
+          Back
+        </Button>
       </Form>
 
       <h4>Questions</h4>
       <ListGroup className="mb-3">
         {game.questions.map((q, index) => (
-          <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+          <ListGroup.Item
+            key={index}
+            className="d-flex justify-content-between align-items-center"
+          >
             <div>
               #{index + 1}: {q.question}
             </div>
