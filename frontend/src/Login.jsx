@@ -43,7 +43,7 @@ function Login({ successJob, token, showToast }) {
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
-      <Card className="w-100">
+      <Card className="w-75">
         <Card.Body>
           <h2 className="text-center mb-4">Login</h2>
           <Form onSubmit={handleSubmit}>
