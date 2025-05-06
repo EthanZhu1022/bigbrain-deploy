@@ -182,7 +182,7 @@ function GameScreen({ showToast }) {
           <Card.Subtitle className="mb-3 text-muted">
             {currentQuestion?.type?.toUpperCase()} Question
           </Card.Subtitle>
-          <Card.Text style={{ fontSize: "1.25rem" }}>
+          <Card.Text className="fs-5">
             {currentQuestion.question}
           </Card.Text>
           {currentQuestion.media &&

@@ -26,15 +26,16 @@ function Lobby() {
   }, [playerId, navigate]);
 
   return (
-    <Container className="d-flex flex-column align-items-center justify-content-center" style={{ height: '100vh' }}>
-      <h2 className="mb-4 text-center">Waiting for the game to begin...</h2>
-      <img
-        src={image64}
-        alt="Waiting Animation"
-        style={{ maxWidth: '300px', marginBottom: '2rem' }}
-      />
-      <em>ChiPiChiPi , QaPaQaPA</em>
-    </Container>
+<Container className="d-flex flex-column align-items-center justify-content-center vh-100">
+  <h2 className="mb-4 text-center">Waiting for the game to begin...</h2>
+  <img
+    src={image64}
+    alt="Waiting Animation"
+    className="mb-4" 
+  />
+  <em>ChiPiChiPi , QaPaQaPA</em>
+</Container>
+
   );
 }
 

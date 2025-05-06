@@ -37,7 +37,7 @@ function PlayGame() {
 
   return (
     <Container className="mt-5">
-      <Card className="mx-auto" style={{ maxWidth: '500px' }}>
+      <Card className="mx-auto w-75" >
         <Card.Body>
           <Card.Title className="text-center mb-4">Join Game</Card.Title>
 
