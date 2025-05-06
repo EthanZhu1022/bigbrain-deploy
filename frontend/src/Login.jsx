@@ -39,30 +39,31 @@ function Login({ successJob, token, showToast }) {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center login-page" style={{ minHeight: '80vh' }}>
-      <Card style={{ width: '100%', maxWidth: '400px' }}>
-        <Card.Body>
-          <h2 className="text-center mb-4">Login</h2>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} />
-            </Form.Group>
-            <Button variant="primary" type="submit" className="w-100">Login</Button>
-          </Form>
-          <div className="text-center text-muted" style={{ fontSize: '0.9rem' }}>
-            Don&apos;t have an account?&nbsp;Try&nbsp;
-            <Button variant="link" className="p-0 ms-1" onClick={() => navigate('/register')}>
-              Register!
-            </Button>
-          </div>
-        </Card.Body>
-      </Card>
-    </Container>
+<Container className="d-flex justify-content-center align-items-center min-vh-100">
+  <Card className="w-100">
+    <Card.Body>
+      <h2 className="text-center mb-4">Login</h2>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" value={email} onChange={e => setEmail(e.target.value)} />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        </Form.Group>
+        <Button variant="primary" type="submit" className="w-100">Login</Button>
+      </Form>
+      <div className="text-center text-muted small">
+        Don&apos;t have an account?&nbsp;Try&nbsp;
+        <Button variant="link" className="p-0 ms-1" onClick={() => navigate('/register')}>
+          Register!
+        </Button>
+      </div>
+    </Card.Body>
+  </Card>
+</Container>
+
   );
 }
 
