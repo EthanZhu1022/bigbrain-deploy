@@ -260,34 +260,21 @@ function Dashboard({ token }) {
       <Row className="mt-3">
         {games.map((game) => (
           <Col key={game.id} md={4} className="mb-4 d-flex">
-            <Card
-              className="w-100 h-100 d-flex flex-column justify-content-between"
-              style={{ position: "relative" }}
-            >
+            <Card className="w-100 h-100 d-flex flex-column justify-content-between position-relative">
               <div
                 onClick={() => navigate(`/game/${game.id}`)}
-                style={{ cursor: "pointer" }}
+                className="cursor-pointer"
               >
                 <Card.Img
                   variant="top"
                   src={game.thumbnail || "placeholder.png"}
-                  style={{
-                    height: "180px",
-                    width: "100%",
-                    objectFit: "fill",
-                    objectPosition: "center",
-                  }}
+                  className="w-100 object-fit-fill object-position-center"
                 />
               </div>
               <Button
                 variant="danger"
                 size="sm"
-                style={{
-                  position: "absolute",
-                  top: "8px",
-                  right: "8px",
-                  zIndex: 1,
-                }}
+                className="position-absolute top-0 end-0 m-2 z-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   setGameToDelete(game);
@@ -297,11 +284,11 @@ function Dashboard({ token }) {
                 Del
               </Button>
               <Card.Body
-                style={{ cursor: "pointer" }}
+                className="cursor-pointer"
                 onClick={() => navigate(`/game/${game.id}`)}
               >
                 <Card.Title className="text-truncate">{game.name}</Card.Title>
-                <Card.Text style={{ fontSize: "0.9rem", lineHeight: "1.2rem" }}>
+                <Card.Text className="small lh-sm">
                   Questions: {game.questions.length}
                   <br />
                   Duration:{" "}
@@ -326,7 +313,7 @@ function Dashboard({ token }) {
                     {game.active ? "Control Game" : "Start Game"}
                   </Button>
                   {game.active && (
-                    <span style={{ fontSize: "0.8rem" }}>
+                    <span className="small">
                       <strong>SessionId:</strong> {game.active}
                     </span>
                   )}
