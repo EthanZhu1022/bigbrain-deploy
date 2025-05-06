@@ -55,60 +55,59 @@ function Register({ successJob, token, showToast }) {
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
-  <Card className="w-75 w-md-50 w-lg-25 mx-auto">
-    <Card.Body>
-      <h2 className="text-center mb-4">Register</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group className="mb-4">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant="success" type="submit" className="w-100">
-          Register
-        </Button>
-      </Form>
-      <div className="text-center text-muted small mt-3">
-        Already have an account?&nbsp;
-        <Button
-          variant="link"
-          className="p-0 ms-1"
-          onClick={() => navigate("/login")}
-        >
-          Login!
-        </Button>
-      </div>
-    </Card.Body>
-  </Card>
-</Container>
-
+      <Card className="w-75 w-md-50 w-lg-25 mx-auto">
+        <Card.Body>
+          <h2 className="text-center mb-4">Register</h2>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-4">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="success" type="submit" className="w-100">
+              Register
+            </Button>
+          </Form>
+          <div className="text-center text-muted small mt-3">
+            Already have an account?&nbsp;
+            <Button
+              variant="link"
+              className="p-0 ms-1"
+              onClick={() => navigate("/login")}
+            >
+              Login!
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }
 
