@@ -73,7 +73,7 @@ function Pages() {
         </Alert>
       )}
 
-      <Navbar style={{ backgroundColor: '#8e44ad' }} variant="dark" expand="lg" className="mb-4">
+      <Navbar bg="primary" variant="dark" expand="lg" className="mb-4">
         <Container>
           <Navbar.Brand href="#">BigBrain</Navbar.Brand>
           <Nav className="ms-auto">
