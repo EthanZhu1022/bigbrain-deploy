@@ -1,36 +1,35 @@
 import { useState } from "react";
-import {
-  BrowserRouter as Router,
-} from "react-router-dom";
-import Pages from './Pages.jsx';
+import { BrowserRouter as Router } from "react-router-dom";
+import Pages from "./Pages.jsx";
+import { Button, Container } from "react-bootstrap";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  const toggleDarkMode = () => {
-    setDarkMode(prev => !prev);
-  };
-
-  const appClasses = `min-vh-100 position-relative ${darkMode ? 'bg-dark text-white' : 'bg-info text-dark'}`;
-  const buttonClasses = `btn ${darkMode ? 'btn-dark text-light' : 'btn-light text-dark'} shadow`;
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   return (
-    <div className={appClasses}>
-      <div className="position-absolute bottom-0 end-0 m-3">
-        <button
+    <div
+      className={`min-h-screen relative ${
+        darkMode ? "bg-gray-900 text-white" : "bg-blue-100 text-black"
+      }`}
+    >
+      <div className="absolute bottom-4 right-4">
+        <Button
+          variant={darkMode ? "dark" : "light"}
           onClick={toggleDarkMode}
-          className={buttonClasses}
         >
-          Dark Mode
-        </button>
+          Toggle Dark Mode
+        </Button>
       </div>
 
       <Router>
-        <Pages />
+        <Container className="py-4">
+          <Pages />
+        </Container>
       </Router>
     </div>
   );
 }
 
 export default App;
-
