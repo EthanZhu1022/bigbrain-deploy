@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
 } from "react-router-dom";
 import Pages from './Pages.jsx';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
